@@ -13,9 +13,10 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js");
 }
 
-window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault(); // Stop default Chrome behavior
-    event.prompt(); // Show the install prompt manually
+window.addEventListener("beforeinstallprompt", (event: any) => {
+    event.preventDefault();
+    const deferredPrompt = event;
+    deferredPrompt.prompt(); // Show install prompt
 });
 
 
