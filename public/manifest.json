@@ -1,0 +1,16 @@
+{
+    "short_name": "vitenote",
+    "name": "vitenote taking app",
+    "description": "☝️🤓",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "human.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -9,6 +9,16 @@ const theme = createTheme({
     primaryColor: 'yellow',
 })
 
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js");
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault(); // Stop default Chrome behavior
+    event.prompt(); // Show the install prompt manually
+});
+
+
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <MantineProvider defaultColorScheme="dark" theme={theme}>
