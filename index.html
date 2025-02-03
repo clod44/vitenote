@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vite note</title>
+    <style>
+        .loader {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 32px 0 #fff, -32px 0 #fff;
+            position: relative;
+            animation: flash 0.5s ease-out infinite alternate;
+        }
+
+        @keyframes flash {
+            0% {
+                background-color: #FFF2;
+                box-shadow: 32px 0 #FFF2, -32px 0 #FFF;
+            }
+
+            50% {
+                background-color: #FFF;
+                box-shadow: 32px 0 #FFF2, -32px 0 #FFF2;
+            }
+
+            100% {
+                background-color: #FFF2;
+                box-shadow: 32px 0 #FFF, -32px 0 #FFF2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="spinner" style="height: 100vh; display: flex; justify-content: center; align-items: center;">
+        <span class="loader"></span>
+    </div>
+    <div id="root"></div>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            const spinner = document.getElementById('spinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
