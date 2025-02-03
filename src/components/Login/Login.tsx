@@ -1,7 +1,7 @@
 import { useForm } from "@mantine/form";
 import GenericTopBar from "../GenericTopBar"
-import { Anchor, Button, Checkbox, PasswordInput, Stack, Tabs, TextInput, Title } from "@mantine/core";
-import { IconAffiliateFilled, IconPlus, IconUser, IconUserPlus, IconWorldBolt } from "@tabler/icons-react";
+import { Button, Checkbox, PasswordInput, Stack, Tabs, TextInput, Title } from "@mantine/core";
+import { IconPlus, IconUser, IconWorldBolt } from "@tabler/icons-react";
 
 const Login = () => {
     const loginForm = useForm({

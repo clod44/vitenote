@@ -1,12 +1,12 @@
 import GenericTopBar from "@/components/GenericTopBar"
 import Login from "@/components/Login"
-import { ActionIcon, Avatar, Group, Stack, Text, Title } from "@mantine/core"
+import { ActionIcon, Avatar, Stack, Text } from "@mantine/core"
 import { IconLogout } from "@tabler/icons-react"
 
 const Profile = () => {
 
 
-
+    /* eslint-disable no-constant-condition */
     if (false)
         return (
             <Login />
