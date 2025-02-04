@@ -14,6 +14,7 @@ const NoteCard = () => {
             radius="md"
             p="md"
             onClick={handleCardClick}
+            className="cursor-pointer hover:brightness-105"
         >
             <Title order={4}>NoteCard</Title>
             <Text size="sm" lineClamp={2}>
