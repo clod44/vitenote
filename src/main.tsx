@@ -5,6 +5,7 @@ import App from './App.tsx'
 import '@mantine/core/styles.css';
 import '@mantine/tiptap/styles.css';
 import { MantineProvider, createTheme } from '@mantine/core'
+import { AuthProvider } from './context/auth/';
 const theme = createTheme({
     primaryColor: 'yellow',
 })
@@ -23,7 +24,9 @@ window.addEventListener("beforeinstallprompt", (event: any) => {
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <MantineProvider defaultColorScheme="dark" theme={theme}>
-            <App />
+            <AuthProvider>
+                <App />
+            </AuthProvider>
         </MantineProvider>
     </StrictMode >,
 )

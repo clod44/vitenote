@@ -2,8 +2,11 @@ import { useForm } from "@mantine/form";
 import GenericTopBar from "../GenericTopBar"
 import { Button, Checkbox, PasswordInput, Stack, Tabs, TextInput, Title } from "@mantine/core";
 import { IconPlus, IconUser, IconWorldBolt } from "@tabler/icons-react";
+import { useAuth } from "@/context/auth";
+import { useState } from "react";
 
 const Login = () => {
+    const { signInWithEmail, signUpWithEmail } = useAuth();
     const loginForm = useForm({
         mode: 'uncontrolled',
         initialValues: { email: '', password: '' },
@@ -25,12 +28,13 @@ const Login = () => {
         },
     });
 
+    //signin functions trigger a loading state which hides this page. no need to handle loading state here.
     const handleLoginFormSubmit = (values: typeof loginForm.values) => {
-        console.log(values);
+        signInWithEmail(values.email, values.password);
     }
 
     const handleRegisterFormSubmit = (values: typeof registerForm.values) => {
-        console.log(values);
+        signUpWithEmail(values.email, values.password);
     }
 
     const handleTabChange = () => {
