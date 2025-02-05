@@ -3,7 +3,6 @@ import GenericTopBar from "../GenericTopBar"
 import { Button, Checkbox, PasswordInput, Stack, Tabs, TextInput, Title } from "@mantine/core";
 import { IconPlus, IconUser, IconWorldBolt } from "@tabler/icons-react";
 import { useAuth } from "@/context/auth";
-import { useState } from "react";
 
 const Login = () => {
     const { signInWithEmail, signUpWithEmail } = useAuth();

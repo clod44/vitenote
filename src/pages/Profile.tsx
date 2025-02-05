@@ -6,9 +6,12 @@ import { ActionIcon, Avatar, CopyButton, Stack, Text, TextInput, Tooltip } from 
 import { IconCheck, IconCopy, IconLogout } from "@tabler/icons-react"
 
 const Profile = () => {
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, signOut } = useAuth();
 
-    /* eslint-disable no-constant-condition */
+    const handleSignOut = async () => {
+        //TODO: add confirmation
+        await signOut();
+    }
     if (isLoading)
         return (
             <Loading />
@@ -18,8 +21,6 @@ const Profile = () => {
         return (
             <Login />
         )
-
-    console.log(user)
     return (
         <>
             <GenericTopBar title="Profile" />
@@ -42,7 +43,7 @@ const Profile = () => {
                         )}
                     </CopyButton>
                 } />
-                <ActionIcon variant="default" size={"input-sm"}>
+                <ActionIcon variant="default" size={"input-sm"} onClick={handleSignOut}>
                     <IconLogout />
                 </ActionIcon>
             </Stack>

@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/auth";
 import { Menu, ActionIcon, Avatar } from "@mantine/core";
 import { IconInfoCircle, IconSettings, IconUser } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
@@ -5,14 +6,20 @@ import { useNavigate } from "react-router-dom";
 
 const NotesTopMenu = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const handleNavigationClick = (path: string) => {
         navigate(path);
     }
 
     return (
+
         <Menu shadow="md" width={200} withArrow position="bottom-end">
             <Menu.Target>
-                <ActionIcon size={"input-sm"} variant="default">
+                <ActionIcon
+                    className={!user ? "animate-pulse" : ""}
+                    size={"input-sm"}
+                    variant="default"
+                >
                     <Avatar variant="transparent" radius={0} src={null} />
                 </ActionIcon>
             </Menu.Target>
