@@ -1,18 +1,20 @@
+import CreateNoteFab from "@/components/CreateNoteFab";
 import Loading from "@/components/Loading";
 import NoteCard from "@/components/NoteCard"
 import NotesToolBar from "@/components/NotesToolBar"
-import { useAuth } from "@/context/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { useNotes } from "@/hooks/useNotes";
 import { ScrollArea, Space, Stack, Text } from "@mantine/core"
 import { IconCookieMan } from "@tabler/icons-react";
 
-
 const Notes = () => {
-    const { user, isLoading } = useAuth();
+    const { user, isLoading: userLoading } = useAuth();
+    const { notes, isLoading: notesLoading } = useNotes();
 
     return (
         <>
             <NotesToolBar />
-            {isLoading ? (
+            {userLoading || notesLoading ? (
                 <Loading />
             ) : (
                 !user ? (
@@ -22,6 +24,7 @@ const Notes = () => {
                     </Stack>
                 ) : (
                     <ScrollArea w={"100%"} h={"100%"} type="never">
+                        <CreateNoteFab />
                         <Space h={"xl"} my={"md"} />
                         <Stack
                             px={"sm"}
@@ -29,8 +32,9 @@ const Notes = () => {
                             align="stretch"
                             gap={"sm"}
                         >
-                            {Array.from({ length: 100 }).map((_, index) => (
-                                <NoteCard key={index} />
+                            {notes.length === 0 && <Text c={"dimmed"} size="xs" className="text-center">No notes found</Text>}
+                            {notes.map((note) => (
+                                <NoteCard key={note.id} note={note} />
                             ))}
                         </Stack>
                         <Space h={"xl"} my={"md"} />
