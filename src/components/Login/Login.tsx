@@ -2,7 +2,7 @@ import { useForm } from "@mantine/form";
 import GenericTopBar from "../GenericTopBar"
 import { Button, Checkbox, PasswordInput, Stack, Tabs, TextInput, Title } from "@mantine/core";
 import { IconPlus, IconUser, IconWorldBolt } from "@tabler/icons-react";
-import { useAuth } from "@/context/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 const Login = () => {
     const { signInWithEmail, signUpWithEmail } = useAuth();

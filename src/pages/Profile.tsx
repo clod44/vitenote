@@ -1,7 +1,7 @@
 import GenericTopBar from "@/components/GenericTopBar"
 import Loading from "@/components/Loading"
 import Login from "@/components/Login"
-import { useAuth } from "@/context/auth"
+import { useAuth } from "@/hooks/useAuth"
 import { ActionIcon, Avatar, CopyButton, Stack, Text, TextInput, Tooltip } from "@mantine/core"
 import { IconCheck, IconCopy, IconLogout } from "@tabler/icons-react"
 
