@@ -30,13 +30,25 @@ const Profile = () => {
                 p={"md"}
                 gap={"md"}
             >
-                <Avatar variant="default" size={"xl"} />
-                <Text ff={"monospace"} size="xl">{user.email}</Text>
+                <Avatar variant="default" size={"xl"} style={{
+                    boxShadow: "0 0 15em rgba(255,255,255, 1)"
+                }} />
+                <TextInput size="sm" placeholder="id" value={user.email} rightSection={
+                    <CopyButton value={user.email} timeout={2000}>
+                        {({ copied, copy }) => (
+                            <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+                                <ActionIcon variant="default" c={"dimmed"} onClick={copy}>
+                                    {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                                </ActionIcon>
+                            </Tooltip>
+                        )}
+                    </CopyButton>
+                } />
                 <TextInput size="sm" placeholder="id" value={user.id} rightSection={
                     <CopyButton value={user.id} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                                <ActionIcon variant="default" onClick={copy}>
+                                <ActionIcon variant="default" c={"dimmed"} onClick={copy}>
                                     {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                                 </ActionIcon>
                             </Tooltip>

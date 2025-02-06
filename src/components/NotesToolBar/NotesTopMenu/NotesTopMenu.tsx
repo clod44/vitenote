@@ -30,7 +30,7 @@ const NotesTopMenu = () => {
                     leftSection={<IconUser size={14} />}
                     onClick={() => handleNavigationClick("/profile")}
                 >
-                    Not logged in
+                    {user?.email || "Not logged in"}
                 </Menu.Item>
                 <Menu.Label>Application</Menu.Label>
                 <Menu.Item
