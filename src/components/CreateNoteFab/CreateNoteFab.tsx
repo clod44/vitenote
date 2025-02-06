@@ -15,10 +15,9 @@ const CreateNoteFab = () => {
     };
     return (
         <Fab
-            onClick={handleCreateNote}
-            loading={loading}
+            onClick={loading ? undefined : handleCreateNote}
         >
-            <IconPlus />
+            <IconPlus className={loading ? "animate-spin animate-ease-in-out" : "animate-jump-in"} />
         </Fab>
     )
 

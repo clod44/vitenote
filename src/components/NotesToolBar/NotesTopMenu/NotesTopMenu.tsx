@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const NotesTopMenu = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, isLoading: userLoading } = useAuth();
     const handleNavigationClick = (path: string) => {
         navigate(path);
     }
@@ -15,13 +15,19 @@ const NotesTopMenu = () => {
 
         <Menu shadow="md" width={200} withArrow position="bottom-end">
             <Menu.Target>
-                <ActionIcon
-                    className={!user ? "animate-pulse" : ""}
-                    size={"input-sm"}
-                    variant="default"
-                >
-                    <Avatar variant="transparent" radius={0} src={null} />
-                </ActionIcon>
+                <div className="relative">
+                    <ActionIcon
+                        size={"input-sm"}
+                        variant="default"
+                    >
+                        <Avatar variant="transparent" radius={0} src={null} />
+                    </ActionIcon>
+                    {!user && !userLoading &&
+                        <div className={`absolute top-1/4 w-1/2 left-1/4 h-1/2 -z-10 animate-pulse animate-duration-[2000ms]`} style={{
+                            boxShadow: "0 0 3em .5em rgba(255,255,255, 1)"
+                        }} />
+                    }
+                </div>
             </Menu.Target>
 
             <Menu.Dropdown>
