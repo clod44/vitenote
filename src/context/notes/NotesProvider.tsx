@@ -3,18 +3,23 @@ import supabase from '@/utils/supabase';
 import { NotesContext, NotesContextType, Note } from './NotesContext';
 import { RealtimePostgresChangesPayload, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { useAuth } from '@/hooks/useAuth';
+import { useDebouncedState } from '@mantine/hooks';
 //TODO:cast proper types to stuff
 
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [notes, setNotes] = useState<Note[]>([]);
+    const [showArchived, setShowArchived] = useDebouncedState<boolean>(false, 500, { leading: true });
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
 
     const fetchNotes = async () => {
         setIsLoading(true);
         console.log("fetching all notes")
-        const { data, error } = await supabase.from('notes').select('*').order('updated_at', { ascending: false });
+        const { data, error } = await supabase.from('notes')
+            .select('*')
+            .eq('archived', showArchived)
+            .order('updated_at', { ascending: false });
         if (error) {
             console.error('Error fetching notes:', error.message);
             setNotes([]);
@@ -24,11 +29,13 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsLoading(false);
     };
 
+    useEffect(() => {
+        fetchNotes();
+        console.log("show archived changed:", showArchived)
+    }, [showArchived]);
 
     useEffect(() => {
-
         fetchNotes();
-
         const notesSubscription = supabase.channel('notes-all-changes')
             .on(
                 'postgres_changes',
@@ -70,7 +77,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const applyServerChangesInsert = (payload: RealtimePostgresInsertPayload<Note>) => {
         const { new: newNote } = payload;
-        setNotes((prevNotes) => [...prevNotes, newNote]);
+        setNotes((prevNotes) => [newNote, ...prevNotes]);
     };
 
     const applyServerChangesUpdate = (payload: RealtimePostgresUpdatePayload<Note>) => {
@@ -142,7 +149,16 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     return (
-        <NotesContext.Provider value={{ notes, createNote, updateNote, toggleArchiveNote, deleteNote, isLoading }}>
+        <NotesContext.Provider value={{
+            notes,
+            createNote,
+            updateNote,
+            toggleArchiveNote,
+            deleteNote,
+            isLoading,
+            showArchived,
+            setShowArchived
+        }}>
             {children}
         </NotesContext.Provider>
     );

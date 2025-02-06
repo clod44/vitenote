@@ -19,8 +19,8 @@ const NoteCard = ({ note }: { note: Note }) => {
             onClick={handleCardClick}
             className="cursor-pointer hover:brightness-105"
         >
-            <Group justify="space-between">
-                <Title order={4}>
+            <Group justify="space-between" wrap="nowrap">
+                <Title order={4} lineClamp={1}>
                     {note.title.trim().length > 0 ?
                         note.title :
                         "Untitled"

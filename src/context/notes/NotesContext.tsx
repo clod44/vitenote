@@ -18,5 +18,7 @@ export interface NotesContextType {
     toggleArchiveNote: (note: Note) => Promise<void>;
     deleteNote: (id: number) => Promise<void>;
     isLoading: boolean;
+    showArchived: boolean;
+    setShowArchived: (showArchived: boolean) => void;
 }
 export const NotesContext = createContext<NotesContextType | undefined>(undefined);
