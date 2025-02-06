@@ -33,7 +33,7 @@ const Profile = () => {
                 <Avatar variant="default" size={"xl"} style={{
                     boxShadow: "0 0 15em rgba(255,255,255, 1)"
                 }} />
-                <TextInput size="sm" placeholder="id" value={user.email} rightSection={
+                <TextInput size="sm" placeholder="id" defaultValue={user.email} readOnly rightSection={
                     <CopyButton value={user.email} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
@@ -44,7 +44,7 @@ const Profile = () => {
                         )}
                     </CopyButton>
                 } />
-                <TextInput size="sm" placeholder="id" value={user.id} rightSection={
+                <TextInput size="sm" placeholder="id" defaultValue={user.id} readOnly rightSection={
                     <CopyButton value={user.id} timeout={2000}>
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">

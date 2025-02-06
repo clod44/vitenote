@@ -10,18 +10,22 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
+
+    const fetchNotes = async () => {
+        setIsLoading(true);
+        console.log("fetching all notes")
+        const { data, error } = await supabase.from('notes').select('*');
+        if (error) {
+            console.error('Error fetching notes:', error.message);
+            setNotes([]);
+        } else {
+            setNotes(data || []);
+        }
+        setIsLoading(false);
+    };
+
+
     useEffect(() => {
-        const fetchNotes = async () => {
-            setIsLoading(true);
-            const { data, error } = await supabase.from('notes').select('*');
-            if (error) {
-                console.error('Error fetching notes:', error.message);
-                setNotes([]);
-            } else {
-                setNotes(data || []);
-            }
-            setIsLoading(false);
-        };
 
         fetchNotes();
 
@@ -36,12 +40,15 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             )
             .subscribe()
 
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) fetchNotes();
+        })
         return () => {
             supabase.removeChannel(notesSubscription);
+            authSubscription.unsubscribe()
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
 
     const applyServerChanges = (payload: RealtimePostgresChangesPayload<Note>) => {
         const { eventType } = payload;
