@@ -20,5 +20,6 @@ export interface NotesContextType {
     isLoading: boolean;
     showArchived: boolean;
     setShowArchived: (showArchived: boolean) => void;
+    getNote: (id: number) => Promise<Note | null>;
 }
 export const NotesContext = createContext<NotesContextType | undefined>(undefined);

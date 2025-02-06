@@ -2,47 +2,70 @@ import GenericTopBar from "@/components/GenericTopBar";
 import TextEditor from "@/components/TextEditor";
 import { useNotes } from "@/hooks/useNotes";
 import { ActionIcon, Group, Modal, Paper, Space, Stack, Switch, Text, TextInput } from "@mantine/core";
-import { useDebouncedState, useDisclosure } from "@mantine/hooks";
-import { IconDotsVertical, IconSettings } from "@tabler/icons-react";
+import { useDebouncedCallback, useDebouncedState, useDisclosure } from "@mantine/hooks";
+import { IconCloudCheck, IconCloudPause, IconDotsVertical, IconSettings, IconSkull } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
 import { Note as NoteType } from "@/context/notes";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextEditorRef } from "@/components/TextEditor/TextEditor";
+import Loading from "@/components/Loading";
 
 const Note = () => {
     const { id } = useParams();
-    const [note, setNote] = useDebouncedState<NoteType | null>(null, 1000, { leading: true });
     const editorRef = useRef<TextEditorRef | null>(null);
-    const { notes, updateNote } = useNotes();
-    const [modalOpened, { open: modalOpen, close: modalClose }] = useDisclosure(false);
+    const [note, setNote] = useDebouncedState<NoteType | null>(null, 1000, { leading: true });
+    const [noteLoading, setNoteLoading] = useState(true);
+    const [noteCloudSynced, setNoteCloudSynced] = useState(false);
 
+    /* 
+    TODO: tidy up the Note component
+    this is retarded but otherwise editor initializes late and cant catch up with editable flag setting
+    */
+    const [isEditable, setIsEditable] = useState(false);
+
+    const [modalOpened, { open: modalOpen, close: modalClose }] = useDisclosure(false);
+    const { notes, updateNote, getNote } = useNotes();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleNoteUpdate = (data: { [key: string]: any }) => {
+        setNoteCloudSynced(false);
+        debouncedUpdateNote(data);
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const debouncedUpdateNote = useDebouncedCallback((data: { [key: string]: any }) => {
         if (note) {
-            setNote({ ...note, ...data } as NoteType);
+            const newNote = { ...note, ...data } as NoteType;
+            setNote(newNote);
+            updateNote(newNote);
         }
-    }
+    }, 1000);
 
     useEffect(() => {
-        //debounced useEffect
-        if (note) {
-            console.log(note);
-            updateNote(note);
-        } else {
-            editorRef.current?.editor?.setEditable(false);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [note]);
+        setNoteCloudSynced(true);
+    }, [notes]);
 
     useEffect(() => {
-        if (!id) return;
-        const _note = notes.find((note) => note.id == parseInt(id)) || null;
-        if (_note) {
-            editorRef.current?.setContent(_note.content);
-            editorRef.current?.editor?.setEditable(true);
+        const retrieveNote = async () => {
+            if (!id) return;
+            try {
+                setNoteLoading(true);
+                const note = await getNote(parseInt(id));
+                if (note) {
+                    editorRef.current?.setContent(note.content);
+                    setIsEditable(true);
+                    setNote(note);
+                } else {
+                    setIsEditable(false);
+                    setNote(null);
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setNoteLoading(false);
+            }
         }
-        setNote(_note);
+
+        retrieveNote();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
@@ -53,8 +76,12 @@ const Note = () => {
                     placeholder="Title"
                     className="grow"
                     defaultValue={note?.title}
-                    readOnly={note == null}
+                    readOnly={note == null || noteLoading}
                     onChange={(e) => handleNoteUpdate({ title: e.target.value })}
+                    rightSection={
+                        noteCloudSynced ? <IconCloudCheck /> : <IconCloudPause className="animate-pulse" />
+                    }
+
                 />
                 <Modal
                     opened={modalOpened}
@@ -110,7 +137,7 @@ const Note = () => {
                 <ActionIcon
                     variant="default"
                     size={"input-sm"}
-                    disabled={note == null}
+                    disabled={note == null || noteLoading}
                     onClick={modalOpen}
                 >
                     <IconDotsVertical />
@@ -119,12 +146,28 @@ const Note = () => {
 
             <Space h={"md"} my={"md"} />
 
-            <TextEditor
-                defaultValue={note?.content || ""}
-                onChange={(value) => handleNoteUpdate({ content: value })}
-                ref={editorRef}
-                readOnly={true} // will later update this
-            />
+            {noteLoading ? (
+                <Loading label="Retrieving your note..." />
+            ) : (
+                !noteLoading && note == null ? (
+                    <Stack w={"100%"} align="center" gap={"md"}>
+                        <IconSkull className="animate-shake" />
+                        <Text c={"dimmed"} size="xs">
+                            Something went wrong while loading your note.
+                        </Text>
+                        <Text c={"dimmed"} size="xs">
+                            Try refreshing the app.
+                        </Text>
+                    </Stack>
+                ) : (
+                    <TextEditor
+                        defaultValue={note?.content || ""}
+                        onChange={(value) => handleNoteUpdate({ content: value })}
+                        ref={editorRef}
+                        isEditable={isEditable}
+                    />
+                )
+            )}
         </>
     )
 }

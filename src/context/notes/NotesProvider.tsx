@@ -12,7 +12,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [showArchived, setShowArchived] = useDebouncedState<boolean>(false, 500, { leading: true });
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-
     const fetchNotes = async () => {
         setIsLoading(true);
         console.log("fetching all notes")
@@ -83,6 +82,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const applyServerChangesUpdate = (payload: RealtimePostgresUpdatePayload<Note>) => {
         const { new: newNote } = payload;
+        if (newNote.archived !== showArchived) {
+            //something got archived or unarchived. delete it from the client list.
+            setNotes((prevNotes) => prevNotes.filter((note) => note.id !== newNote.id));
+            return;
+        }
         setNotes((prevNotes) =>
             prevNotes.map((note) => (note.id === newNote.id ? newNote : note))
         );
@@ -92,6 +96,43 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const { old: oldNote } = payload as unknown as { old: { id: number } | null };
         setNotes((prevNotes) => prevNotes.filter((note) => note.id !== oldNote?.id));
     };
+
+    /**
+     * Retrieves a note from the database by id
+     * @param id The id of the note to retrieve
+     * @returns The retrieved note or null if not found
+     * @throws An error if the note could not be retrieved
+     */
+    const fetchNote = async (id: number) => {
+        try {
+            const { data, error } = await supabase.from('notes').select('*').eq('id', id).single();
+            if (error) throw error;
+            return data || null;
+        } catch (error) {
+            console.error('Error fetching note:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Retrieves a note from the local state or the database
+     * @param id The id of the note to retrieve
+     * @returns The retrieved note or null if not found
+     * @throws An error if the note could not be retrieved
+     */
+    const getNote: NotesContextType['getNote'] = async (id) => {
+        try {
+            //try from local state
+            const localNote = notes.find((note) => note.id == id) || null;
+            if (localNote) return localNote;
+            //try from db
+            const dbNote = await fetchNote(id);
+            return dbNote || null;
+        } catch (error) {
+            console.error('Error fetching note:', error);
+            throw error;
+        }
+    }
 
     const createNote: NotesContextType['createNote'] = async () => {
         try {
@@ -116,9 +157,15 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }
 
+    /**
+     * Updates a note in the database.
+     * @param note The note to update. title, content and color will be updated.
+     * @throws An error if the user is not logged in or if the note could not be updated.
+     */
     const updateNote: NotesContextType['updateNote'] = async (note) => {
         try {
             if (!user) throw new Error('User not logged in');
+            console.log("updating note", note)
             const { error } = await supabase.from('notes').update({ title: note.title, content: note.content, color: note.color }).eq('id', note.id);
             if (error) throw error;
         } catch (error) {
@@ -158,7 +205,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             deleteNote,
             isLoading,
             showArchived,
-            setShowArchived
+            setShowArchived,
+            getNote
         }}>
             {children}
         </NotesContext.Provider>

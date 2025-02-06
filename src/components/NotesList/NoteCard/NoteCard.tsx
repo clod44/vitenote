@@ -2,13 +2,19 @@ import { Note } from "@/context/notes";
 import { Group, Paper, Title } from "@mantine/core"
 import { useNavigate } from "react-router-dom";
 import NoteCardMenu from "./NoteCardMenu";
+import { useNotes } from "@/hooks/useNotes";
 
 
 const NoteCard = ({ note }: { note: Note }) => {
     const navigate = useNavigate();
+    const { showArchived } = useNotes();
     const handleCardClick = () => {
         navigate("/note/" + note.id);
     }
+
+
+    //*remove* this card if its archived status changes
+    if (!showArchived === note.archived) return null;
 
     return (
         <Paper

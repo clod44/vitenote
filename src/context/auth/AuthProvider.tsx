@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import supabase from '@/utils/supabase';
 import { AuthContextType, AuthContext } from './AuthContext';
+import Loading from '@/components/Loading';
 //TODO:cast proper types to stuff
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -73,7 +74,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <AuthContext.Provider value={{ user, signUpWithEmail, signInWithEmail, signOut, isLoading }}>
-            {children}
+            {isLoading ? (
+                <div className='fixed top-0 left-0 w-full h-full flex items-center justify-center z-50'>
+                    <Loading label='Syncing...' />
+                </div>
+            ) : (
+                children
+            )}
         </AuthContext.Provider>
     );
 };

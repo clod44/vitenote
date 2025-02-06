@@ -1,4 +1,5 @@
 import { Note } from "@/context/notes";
+import { useNotes } from "@/hooks/useNotes";
 import { ActionIcon, Menu, Text } from "@mantine/core";
 import {
     IconSettings,
@@ -10,9 +11,12 @@ import {
 } from '@tabler/icons-react';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useNotes } from "@/hooks/useNotes";
 
-const NoteCardMenu = ({ note }: { note: Note }) => {
+const NoteCardMenu = ({
+    note,
+}: {
+    note: Note,
+}) => {
     const { deleteNote, toggleArchiveNote } = useNotes();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();

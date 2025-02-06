@@ -13,20 +13,24 @@ import { forwardRef, useImperativeHandle } from 'react';
 export interface TextEditorRef {
     getContent: () => string;
     setContent: (content: string) => void;
-    editor: Editor | null
+    editor: Editor | null;
+    setEditable: (editable: boolean) => void
 }
 
 const TextEditor = forwardRef(({
     defaultValue = "",
     onChange = () => { },
-    readOnly = false
+    isEditable = true
 }: {
     defaultValue?: string,
     onChange?: (value: string) => void,
-    readOnly?: boolean
+    isEditable?: boolean
 }, ref) => {
+
+
+
     const editor = useEditor({
-        editable: !readOnly,
+        editable: isEditable,
         extensions: [
             StarterKit,
             Underline,
@@ -41,20 +45,24 @@ const TextEditor = forwardRef(({
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
-
     });
 
     useImperativeHandle(ref, () => ({
         getContent: () => editor?.getHTML() || "",
         setContent: (content: string) => editor?.commands.setContent(content),
-        editor: editor
+        editor: editor,
+        setEditable: (editable: boolean) => {
+            if (isEditable === editable) return;
+            editor?.setEditable(editable)
+        }
     }));
 
     return (
-        <ScrollArea h={"100%"}>
-            <RichTextEditor editor={editor} styles={{
+        <ScrollArea h={"100%"} w={"100%"} scrollbars={"y"}>
+            <RichTextEditor w={"100%"} editor={editor} styles={{
                 root: {
                     height: "100%",
+                    width: "100%",
                     display: "flex",
                     flexDirection: "column",
                     backgroundColor: "transparent",
@@ -71,60 +79,64 @@ const TextEditor = forwardRef(({
                     paddingTop: 0,
                 }
             }}>
-                <RichTextEditor.Toolbar sticky>
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Bold />
-                        <RichTextEditor.Italic />
-                        <RichTextEditor.Underline />
-                        <RichTextEditor.Strikethrough />
-                        <RichTextEditor.ClearFormatting />
-                        <RichTextEditor.Highlight />
-                        <RichTextEditor.Code />
-                    </RichTextEditor.ControlsGroup>
+                {isEditable && (
+                    <>
+                        <RichTextEditor.Toolbar sticky>
+                            <RichTextEditor.ControlsGroup>
+                                <RichTextEditor.Bold />
+                                <RichTextEditor.Italic />
+                                <RichTextEditor.Underline />
+                                <RichTextEditor.Strikethrough />
+                                <RichTextEditor.ClearFormatting />
+                                <RichTextEditor.Highlight />
+                                <RichTextEditor.Code />
+                            </RichTextEditor.ControlsGroup>
 
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.H1 />
-                        <RichTextEditor.H2 />
-                        <RichTextEditor.H3 />
-                        <RichTextEditor.H4 />
-                    </RichTextEditor.ControlsGroup>
-
-
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Link />
-                        <RichTextEditor.Unlink />
-                    </RichTextEditor.ControlsGroup>
-
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Blockquote />
-                        <RichTextEditor.Hr />
-                        <RichTextEditor.BulletList />
-                        <RichTextEditor.OrderedList />
-                        <RichTextEditor.Subscript />
-                        <RichTextEditor.Superscript />
-                    </RichTextEditor.ControlsGroup>
+                            <RichTextEditor.ControlsGroup>
+                                <RichTextEditor.H1 />
+                                <RichTextEditor.H2 />
+                                <RichTextEditor.H3 />
+                                <RichTextEditor.H4 />
+                            </RichTextEditor.ControlsGroup>
 
 
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.AlignLeft />
-                        <RichTextEditor.AlignCenter />
-                        <RichTextEditor.AlignJustify />
-                        <RichTextEditor.AlignRight />
-                    </RichTextEditor.ControlsGroup>
+                            <RichTextEditor.ControlsGroup>
+                                <RichTextEditor.Link />
+                                <RichTextEditor.Unlink />
+                            </RichTextEditor.ControlsGroup>
 
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Undo />
-                        <RichTextEditor.Redo />
-                    </RichTextEditor.ControlsGroup>
-                </RichTextEditor.Toolbar>
-                {editor && (
-                    <BubbleMenu editor={editor}>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Bold />
-                            <RichTextEditor.Italic />
-                            <RichTextEditor.Link />
-                        </RichTextEditor.ControlsGroup>
-                    </BubbleMenu>
+                            <RichTextEditor.ControlsGroup>
+                                <RichTextEditor.Blockquote />
+                                <RichTextEditor.Hr />
+                                <RichTextEditor.BulletList />
+                                <RichTextEditor.OrderedList />
+                                <RichTextEditor.Subscript />
+                                <RichTextEditor.Superscript />
+                            </RichTextEditor.ControlsGroup>
+
+
+                            <RichTextEditor.ControlsGroup>
+                                <RichTextEditor.AlignLeft />
+                                <RichTextEditor.AlignCenter />
+                                <RichTextEditor.AlignJustify />
+                                <RichTextEditor.AlignRight />
+                            </RichTextEditor.ControlsGroup>
+
+                            <RichTextEditor.ControlsGroup>
+                                <RichTextEditor.Undo />
+                                <RichTextEditor.Redo />
+                            </RichTextEditor.ControlsGroup>
+                        </RichTextEditor.Toolbar>
+                        {editor && (
+                            <BubbleMenu editor={editor}>
+                                <RichTextEditor.ControlsGroup>
+                                    <RichTextEditor.Bold />
+                                    <RichTextEditor.Italic />
+                                    <RichTextEditor.Link />
+                                </RichTextEditor.ControlsGroup>
+                            </BubbleMenu>
+                        )}
+                    </>
                 )}
                 <RichTextEditor.Content />
             </RichTextEditor>
