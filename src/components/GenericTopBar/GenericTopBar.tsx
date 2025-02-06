@@ -1,14 +1,24 @@
 import { ActionIcon, Group, Text } from "@mantine/core"
 import { IconChevronLeft } from "@tabler/icons-react"
+import { useNavigate } from "react-router-dom"
 
 const GenericTopBar = ({
     title,
-    children
+    backButtonPath = "/",
+    backButtonUseHistory = false,
+    children,
 }: {
     title?: string,
+    backButtonPath?: string | null,
+    backButtonUseHistory?: boolean
     children?: React.ReactNode
 }) => {
+    const navigate = useNavigate();
     const handleGoBack = () => {
+        if (!backButtonUseHistory && backButtonPath) {
+            navigate(backButtonPath);
+            return;
+        }
         window.history.back();
     }
 

@@ -1,5 +1,5 @@
 import { RichTextEditor, Link } from '@mantine/tiptap';
-import { BubbleMenu, useEditor } from '@tiptap/react';
+import { BubbleMenu, Editor, useEditor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -8,18 +8,25 @@ import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import Placeholder from '@tiptap/extension-placeholder';
 import { ScrollArea } from '@mantine/core';
+import { forwardRef, useImperativeHandle } from 'react';
 
+export interface TextEditorRef {
+    getContent: () => string;
+    setContent: (content: string) => void;
+    editor: Editor | null
+}
 
-
-
-const TextEditor = ({
-    value = "",
+const TextEditor = forwardRef(({
+    defaultValue = "",
     onChange = () => { },
+    readOnly = false
 }: {
-    value?: string;
-    onChange?: (value: string) => void;
-}) => {
+    defaultValue?: string,
+    onChange?: (value: string) => void,
+    readOnly?: boolean
+}, ref) => {
     const editor = useEditor({
+        editable: !readOnly,
         extensions: [
             StarterKit,
             Underline,
@@ -30,15 +37,21 @@ const TextEditor = ({
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
             Placeholder.configure({ placeholder: 'Click here to start typing...' })
         ],
-        content: value || '',
+        content: defaultValue || '',
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
+
     });
+
+    useImperativeHandle(ref, () => ({
+        getContent: () => editor?.getHTML() || "",
+        setContent: (content: string) => editor?.commands.setContent(content),
+        editor: editor
+    }));
 
     return (
         <ScrollArea h={"100%"}>
-
             <RichTextEditor editor={editor} styles={{
                 root: {
                     height: "100%",
@@ -58,7 +71,6 @@ const TextEditor = ({
                     paddingTop: 0,
                 }
             }}>
-
                 <RichTextEditor.Toolbar sticky>
                     <RichTextEditor.ControlsGroup>
                         <RichTextEditor.Bold />
@@ -114,15 +126,10 @@ const TextEditor = ({
                         </RichTextEditor.ControlsGroup>
                     </BubbleMenu>
                 )}
-
                 <RichTextEditor.Content />
-
             </RichTextEditor>
-
         </ScrollArea >
-
-
     );
-}
+});
 
 export default TextEditor;

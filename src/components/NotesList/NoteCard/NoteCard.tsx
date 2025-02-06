@@ -1,5 +1,5 @@
 import { Note } from "@/context/notes";
-import { Group, Paper, Stack, Text, Title } from "@mantine/core"
+import { Group, Paper, Title } from "@mantine/core"
 import { useNavigate } from "react-router-dom";
 import NoteCardMenu from "./NoteCardMenu";
 
@@ -20,17 +20,12 @@ const NoteCard = ({ note }: { note: Note }) => {
             className="cursor-pointer hover:brightness-105"
         >
             <Group justify="space-between">
-                <Stack gap={"xs"} h={"100%"} className="grow">
-                    <Title order={4}>
-                        {note.title.trim().length > 0 ?
-                            note.title :
-                            "Untitled"
-                        }
-                    </Title>
-                    {note.content.trim().length > 0 &&
-                        <Text size="sm" lineClamp={2}>{note.content}</Text>
+                <Title order={4}>
+                    {note.title.trim().length > 0 ?
+                        note.title :
+                        "Untitled"
                     }
-                </Stack>
+                </Title>
                 <NoteCardMenu note={note} />
             </Group>
         </Paper>

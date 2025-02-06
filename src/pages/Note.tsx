@@ -1,29 +1,57 @@
 import GenericTopBar from "@/components/GenericTopBar";
 import Loading from "@/components/Loading";
 import TextEditor from "@/components/TextEditor";
-import { ActionIcon, Modal, Paper, Space, Stack, Switch, Text, TextInput } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useNotes } from "@/hooks/useNotes";
+import { ActionIcon, Group, Modal, Paper, Space, Stack, Switch, Text, TextInput } from "@mantine/core";
+import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { IconDotsVertical, IconSettings } from "@tabler/icons-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Note as NoteType } from "@/context/notes";
+import { useEffect, useRef } from "react";
+import { TextEditorRef } from "@/components/TextEditor/TextEditor";
 
 const Note = () => {
     const { id } = useParams();
+    const [note, setNote] = useDebouncedState<NoteType | null>(null, 1000, { leading: true });
+    const editorRef = useRef<TextEditorRef | null>(null);
+    const { notes, updateNote } = useNotes();
     const [modalOpened, { open: modalOpen, close: modalClose }] = useDisclosure(false);
 
-
-    if (!id) {
-        return (
-            <Loading label="Creating your note" />
-        )
+    const handleNoteUpdate = (data: { [key: string]: any }) => {
+        if (note) {
+            setNote({ ...note, ...data } as NoteType);
+        }
     }
+
+    useEffect(() => {
+        //debounced useEffect
+        if (note) {
+            console.log(note);
+            updateNote(note);
+        } else {
+            editorRef.current?.editor?.setEditable(false);
+        }
+    }, [note]);
+
+    useEffect(() => {
+        if (!id) return;
+        const _note = notes.find((note) => note.id == parseInt(id)) || null;
+        if (_note) {
+            editorRef.current?.setContent(_note.content);
+            editorRef.current?.editor?.setEditable(true);
+        }
+        setNote(_note);
+    }, [id]);
 
     return (
         <>
-
-            <GenericTopBar>
+            <GenericTopBar backButtonPath={"/"}>
                 <TextInput
                     placeholder="Title"
                     className="grow"
+                    defaultValue={note?.title}
+                    readOnly={note == null}
+                    onChange={(e) => handleNoteUpdate({ title: e.target.value })}
                 />
                 <Modal
                     opened={modalOpened}
@@ -53,12 +81,15 @@ const Note = () => {
                             align="stretch"
                             gap={"md"}
                         >
-                            <Text c={"dimmed"} size="xs" className="flex items-center gap-2">
-                                <IconSettings />
-                                Options
-                                <div className="grow" />
-                                last updated 3 hours ago
-                            </Text>
+                            <Group justify="space-between" gap={"md"}>
+                                <Text c={"dimmed"} size="xs" className="flex items-center gap-2">
+                                    <IconSettings />
+                                    Options
+                                </Text>
+                                <Text c={"dimmed"} size="xs" className="flex items-center gap-2">
+                                    Last updated 3 hours ago
+                                </Text>
+                            </Group>
 
                             <TextInput
                                 label="Title"
@@ -76,17 +107,21 @@ const Note = () => {
                 <ActionIcon
                     variant="default"
                     size={"input-sm"}
+                    disabled={note == null}
                     onClick={modalOpen}
                 >
                     <IconDotsVertical />
                 </ActionIcon>
             </GenericTopBar>
 
-
             <Space h={"md"} my={"md"} />
 
-            <TextEditor />
-
+            <TextEditor
+                defaultValue={note?.content || ""}
+                onChange={(value) => handleNoteUpdate({ content: value })}
+                ref={editorRef}
+                readOnly={true} // will later update this
+            />
         </>
     )
 }

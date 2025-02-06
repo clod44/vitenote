@@ -14,7 +14,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const fetchNotes = async () => {
         setIsLoading(true);
         console.log("fetching all notes")
-        const { data, error } = await supabase.from('notes').select('*');
+        const { data, error } = await supabase.from('notes').select('*').order('updated_at', { ascending: false });
         if (error) {
             console.error('Error fetching notes:', error.message);
             setNotes([]);
