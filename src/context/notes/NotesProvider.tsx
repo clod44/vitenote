@@ -32,6 +32,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     useEffect(() => {
         fetchNotes();
         console.log("show archived changed:", showArchived)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showArchived]);
 
     useEffect(() => {

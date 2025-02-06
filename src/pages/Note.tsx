@@ -1,11 +1,10 @@
 import GenericTopBar from "@/components/GenericTopBar";
-import Loading from "@/components/Loading";
 import TextEditor from "@/components/TextEditor";
 import { useNotes } from "@/hooks/useNotes";
 import { ActionIcon, Group, Modal, Paper, Space, Stack, Switch, Text, TextInput } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { IconDotsVertical, IconSettings } from "@tabler/icons-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Note as NoteType } from "@/context/notes";
 import { useEffect, useRef } from "react";
 import { TextEditorRef } from "@/components/TextEditor/TextEditor";
@@ -17,6 +16,8 @@ const Note = () => {
     const { notes, updateNote } = useNotes();
     const [modalOpened, { open: modalOpen, close: modalClose }] = useDisclosure(false);
 
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleNoteUpdate = (data: { [key: string]: any }) => {
         if (note) {
             setNote({ ...note, ...data } as NoteType);
@@ -31,6 +32,7 @@ const Note = () => {
         } else {
             editorRef.current?.editor?.setEditable(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [note]);
 
     useEffect(() => {
@@ -41,6 +43,7 @@ const Note = () => {
             editorRef.current?.editor?.setEditable(true);
         }
         setNote(_note);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     return (
