@@ -4,12 +4,18 @@ import Loading from "../Loading";
 import { IconCookieMan, IconSparkles } from "@tabler/icons-react";
 import { ScrollArea, Space, Stack, Text } from "@mantine/core";
 import NoteCard from "./NoteCard";
+import { Note } from "@/context/notes";
 
 
 
-const NotesList = () => {
+const NotesList = ({
+    notes,
+    notesLoading,
+}: {
+    notes: Note[],
+    notesLoading: boolean
+}) => {
     const { user, isLoading: userLoading } = useAuth();
-    const { notes, isLoading: notesLoading } = useNotes();
 
     if (userLoading || notesLoading) return <Loading />;
     if (!user) return (
