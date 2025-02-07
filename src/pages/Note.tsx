@@ -72,7 +72,7 @@ const Note = () => {
 
     return (
         <>
-            <NoteToolBar note={note} noteLoading={noteLoading} noteCloudSynced={noteCloudSynced} />
+            <NoteToolBar note={note} noteLoading={noteLoading} noteCloudSynced={noteCloudSynced} handleNoteUpdate={handleNoteUpdate} />
             {noteLoading ? (
                 <Loading label="Retrieving your note..." />
             ) : (
