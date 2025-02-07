@@ -1,9 +1,6 @@
-import GenericTopBar from "@/components/GenericTopBar";
 import TextEditor from "@/components/TextEditor";
 import { useNotes } from "@/hooks/useNotes";
-import { ActionIcon, Group, Modal, Paper, Space, Stack, Switch, Text, TextInput } from "@mantine/core";
-import { useDebouncedCallback, useDebouncedState, useDisclosure } from "@mantine/hooks";
-import { IconCloudCheck, IconCloudPause, IconDotsVertical, IconSettings, IconSkull } from "@tabler/icons-react";
+import { useDebouncedCallback, useDebouncedState } from "@mantine/hooks";
 import { useParams } from "react-router-dom";
 import { Note as NoteType } from "@/context/notes";
 import { useEffect, useRef, useState } from "react";
