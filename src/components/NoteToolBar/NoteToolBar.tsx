@@ -9,7 +9,7 @@ const NoteToolBar = ({
     note,
     noteLoading = true,
     noteCloudSynced = null,
-    handleNoteUpdate = () => { },
+    handleNoteUpdate = () => { }, //for debounced title update
 }: {
     note: Note | null,
     noteLoading?: boolean,

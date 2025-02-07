@@ -27,13 +27,11 @@ const Note = () => {
 
     const { notes, updateNote, getNote } = useNotes();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleNoteUpdate = (data: { [key: string]: any }) => {
+    const handleNoteUpdate = (data: { [key: string]: string }) => {
         setNoteCloudSynced(false);
         debouncedUpdateNote(data);
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const debouncedUpdateNote = useDebouncedCallback((data: { [key: string]: any }) => {
+    const debouncedUpdateNote = useDebouncedCallback((data: { [key: string]: string }) => {
         if (note) {
             const newNote = { ...note, ...data } as NoteType;
             setNote(newNote);
