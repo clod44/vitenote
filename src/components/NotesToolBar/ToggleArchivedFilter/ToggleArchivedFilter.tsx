@@ -1,4 +1,3 @@
-import { useNotes } from "@/hooks/useNotes"
 import { ActionIcon } from "@mantine/core"
 import { IconArchive, IconArchiveFilled } from "@tabler/icons-react"
 

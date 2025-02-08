@@ -40,11 +40,9 @@ const Notes = () => {
 
     useEffect(() => {
         handleSearch();
+        /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [notesLoading, notes, userLoading, user]);
 
-    useEffect(() => {
-        handleSearch();
-    }, []);
 
     return (
         <>

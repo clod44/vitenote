@@ -3,7 +3,6 @@ import supabase from '@/utils/supabase';
 import { NotesContext, NotesContextType, Note } from './NotesContext';
 import { RealtimePostgresChangesPayload, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { useAuth } from '@/hooks/useAuth';
-import { useDebouncedState } from '@mantine/hooks';
 //TODO:cast proper types to stuff
 
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
