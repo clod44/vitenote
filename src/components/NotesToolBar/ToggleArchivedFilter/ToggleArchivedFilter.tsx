@@ -2,8 +2,13 @@ import { useNotes } from "@/hooks/useNotes"
 import { ActionIcon } from "@mantine/core"
 import { IconArchive, IconArchiveFilled } from "@tabler/icons-react"
 
-const ToggleArchivedFilter = () => {
-    const { showArchived, setShowArchived } = useNotes();
+const ToggleArchivedFilter = ({
+    showArchived = false,
+    setShowArchived = () => { },
+}: {
+    showArchived?: boolean,
+    setShowArchived?: (archived: boolean) => void
+}) => {
 
     return (
         <ActionIcon

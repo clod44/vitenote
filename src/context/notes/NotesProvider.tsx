@@ -9,7 +9,6 @@ import { useDebouncedState } from '@mantine/hooks';
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [notes, setNotes] = useState<Note[]>([]);
-    const [showArchived, setShowArchived] = useDebouncedState<boolean>(false, 500, { leading: true });
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const fetchNotes = async () => {
@@ -17,7 +16,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         console.log("fetching all notes")
         const { data, error } = await supabase.from('notes')
             .select('*')
-            .eq('archived', showArchived)
+            .eq('user_id', user?.id)
             .order('updated_at', { ascending: false });
         if (error) {
             console.error('Error fetching notes:', error.message);
@@ -30,16 +29,10 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     useEffect(() => {
         fetchNotes();
-        console.log("show archived changed:", showArchived)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showArchived]);
-
-    useEffect(() => {
-        fetchNotes();
         const notesSubscription = supabase.channel('notes-all-changes')
             .on(
                 'postgres_changes',
-                { event: '*', schema: 'public', table: 'notes' },
+                { event: '*', schema: 'public', table: 'notes', filter: `user_id=eq.${user?.id}` },
                 (payload: RealtimePostgresChangesPayload<Note>) => {
                     console.log('Change received!', payload)
                     applyServerChanges(payload);
@@ -82,11 +75,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const applyServerChangesUpdate = (payload: RealtimePostgresUpdatePayload<Note>) => {
         const { new: newNote } = payload;
-        if (newNote.archived !== showArchived) {
-            //something got archived or unarchived. delete it from the client list.
-            setNotes((prevNotes) => prevNotes.filter((note) => note.id !== newNote.id));
-            return;
-        }
         setNotes((prevNotes) =>
             prevNotes.map((note) => (note.id === newNote.id ? newNote : note))
         );
@@ -204,8 +192,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             toggleArchiveNote,
             deleteNote,
             isLoading,
-            showArchived,
-            setShowArchived,
             getNote
         }}>
             {children}

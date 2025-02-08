@@ -2,39 +2,39 @@ import { Badge, Group, TextInput } from "@mantine/core"
 import { IconSearch } from "@tabler/icons-react"
 import NotesTopMenu from "./NotesTopMenu"
 import ToggleArchivedFilter from "./ToggleArchivedFilter"
-import { useNotes } from "@/hooks/useNotes"
 import { useEffect, useState } from "react"
-import { useDebouncedState } from "@mantine/hooks"
 
 const NotesToolBar = ({
-    onSearchKeywordChange = () => { },
+    showArchived = false,
+    setShowArchived = () => { },
+    handleSearch = () => { },
+    isLoading = false,
 }: {
-    onSearchKeywordChange?: (keyword: string) => void
+    showArchived?: boolean
+    setShowArchived?: (archived: boolean) => void
+    handleSearch?: (keyword?: string, showArchived?: boolean) => void
+    isLoading?: boolean
 }) => {
-    const { showArchived } = useNotes()
-    const [searchKeyword, setSearchKeyword] = useDebouncedState("", 1000, { leading: true });
-    const [isDebouncing, setIsDebouncing] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState("");
 
     useEffect(() => {
-        onSearchKeywordChange(searchKeyword);
-        setIsDebouncing(false);
+        handleSearch(searchKeyword, showArchived);
         /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    }, [searchKeyword]);
+    }, [searchKeyword, showArchived]);
 
 
     return (
         <div className="absolute left-0 top-0 w-full z-50">
             <Group justify="center" gap={"sm"} p={"sm"} wrap="nowrap">
-                <ToggleArchivedFilter />
+                <ToggleArchivedFilter showArchived={showArchived} setShowArchived={setShowArchived} />
                 <TextInput
                     className="grow"
                     rightSectionPointerEvents="none"
                     defaultValue={searchKeyword}
-                    rightSection={<IconSearch className={isDebouncing ? "animate-pulse animate-duration-[250ms]" : ""} />}
+                    rightSection={<IconSearch className={isLoading ? "animate-pulse animate-duration-[250ms]" : ""} />}
                     placeholder="Search"
                     onChange={(e) => {
                         setSearchKeyword(e.target.value);
-                        setIsDebouncing(true);
                     }}
                 />
                 <NotesTopMenu />

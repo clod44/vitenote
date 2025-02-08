@@ -12,11 +12,11 @@ const NotesList = ({
     notesLoading,
 }: {
     notes: Note[],
-    notesLoading: boolean
+    notesLoading: boolean,
 }) => {
-    const { user, isLoading: userLoading } = useAuth();
+    const { user } = useAuth();
 
-    if (userLoading || notesLoading) return <Loading />;
+    if (notesLoading) return <Loading />;
     if (!user) return (
         <>
             <IconCookieMan size={32} className="mx-auto" />

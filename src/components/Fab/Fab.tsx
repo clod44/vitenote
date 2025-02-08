@@ -17,7 +17,7 @@ const Fab = ({
                     variant="default"
                     radius={"100%"}
                     size={"input-xl"}
-                    className="rounded-full cursor-pointer animate-fade-up animate-duration-[250ms]"
+                    className="rounded-full cursor-pointer animate-fade-left animate-duration-[250ms]"
                     onClick={onClick}
                     {...props}
                 >
