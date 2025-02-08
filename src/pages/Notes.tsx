@@ -19,7 +19,7 @@ const Notes = () => {
 
     useEffect(() => {
         setFilteredNotes(notes);
-    }, [notesLoading]);
+    }, [notesLoading, notes]);
 
     return (
         <>
