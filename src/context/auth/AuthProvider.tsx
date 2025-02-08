@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import supabase from '@/utils/supabase';
 import { AuthContextType, AuthContext } from './AuthContext';
 import Loading from '@/components/Loading';
+import { Provider } from '@supabase/supabase-js';
 //TODO:cast proper types to stuff
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -58,7 +59,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsLoading(false);
         }
     };
-
+    const signInAnonymously: AuthContextType['signInAnonymously'] = async () => {
+        try {
+            setIsLoading(true);
+            const { error } = await supabase.auth.signInAnonymously();
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error logging in:', error);
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    const signInWithOAuth: AuthContextType['signInWithOAuth'] = async (provider: Provider = 'google') => {
+        try {
+            setIsLoading(true);
+            const { error } = await supabase.auth.signInWithOAuth({ provider });
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error logging in:', error);
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
     const signOut: AuthContextType['signOut'] = async () => {
         try {
             setIsLoading(true);
@@ -73,7 +97,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, signUpWithEmail, signInWithEmail, signOut, isLoading }}>
+        <AuthContext.Provider value={{
+            user,
+            signUpWithEmail,
+            signInWithEmail,
+            signInWithOAuth,
+            signInAnonymously,
+            signOut,
+            isLoading
+        }}>
             {isLoading ? (
                 <div className='fixed top-0 left-0 w-full h-full flex items-center justify-center z-50'>
                     <Loading label='Syncing...' />

@@ -18,6 +18,7 @@ const NotesToolBar = ({
     useEffect(() => {
         onSearchKeywordChange(searchKeyword);
         setIsDebouncing(false);
+        /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [searchKeyword]);
 
 

@@ -1,11 +1,11 @@
 import { useForm } from "@mantine/form";
 import GenericTopBar from "../GenericTopBar"
-import { Button, Checkbox, PasswordInput, Stack, Tabs, TextInput, Title } from "@mantine/core";
-import { IconPlus, IconUser, IconWorldBolt } from "@tabler/icons-react";
+import { ActionIcon, Button, Checkbox, Group, PasswordInput, Stack, Tabs, TextInput, Title, Tooltip } from "@mantine/core";
+import { IconPlus, IconSpy, IconUser, IconWorldBolt } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const Login = () => {
-    const { signInWithEmail, signUpWithEmail } = useAuth();
+    const { signInWithEmail, signUpWithEmail, signInAnonymously } = useAuth();
     const loginForm = useForm({
         mode: 'uncontrolled',
         initialValues: { email: '', password: '' },
@@ -36,10 +36,15 @@ const Login = () => {
         signUpWithEmail(values.email, values.password);
     }
 
+    const handleSignInAnonymously = () => {
+        signInAnonymously();
+    }
+
     const handleTabChange = () => {
         loginForm.clearErrors();
         registerForm.clearErrors();
     }
+
 
     return (
         <>
@@ -137,9 +142,20 @@ const Login = () => {
                         </Stack>
                     </form>
                 </Tabs.Panel>
-
             </Tabs>
-
+            <Group
+                w={"100%"}
+                align="center"
+                justify="center"
+                gap={"md"}
+                p={"md"}
+            >
+                <Tooltip label="Sign in anonymously">
+                    <ActionIcon variant="default" size={"input-sm"} onClick={handleSignInAnonymously}>
+                        <IconSpy />
+                    </ActionIcon>
+                </Tooltip>
+            </Group>
         </>
     )
 }
