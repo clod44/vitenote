@@ -1,3 +1,4 @@
+import CopyField from "@/components/CopyField"
 import GenericTopBar from "@/components/GenericTopBar"
 import Loading from "@/components/Loading"
 import Login from "@/components/Login"
@@ -33,31 +34,11 @@ const Profile = () => {
                 <Avatar variant="default" size={"xl"} style={{
                     boxShadow: "0 0 15em rgba(255,255,255, 1)"
                 }} />
+
                 {user.is_anonymous && <Text c={"dimmed"}>Anonymous Account</Text>}
-                {user.email &&
-                    <TextInput size="sm" placeholder="id" defaultValue={user.email} readOnly rightSection={
-                        < CopyButton value={user.email} timeout={2000}>
-                            {({ copied, copy }) => (
-                                <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                                    <ActionIcon variant="default" c={"dimmed"} onClick={copy}>
-                                        {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                                    </ActionIcon>
-                                </Tooltip>
-                            )}
-                        </CopyButton>
-                    } />
-                }
-                <TextInput size="sm" placeholder="id" defaultValue={user.id} readOnly rightSection={
-                    <CopyButton value={user.id} timeout={2000}>
-                        {({ copied, copy }) => (
-                            <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                                <ActionIcon variant="default" c={"dimmed"} onClick={copy}>
-                                    {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                                </ActionIcon>
-                            </Tooltip>
-                        )}
-                    </CopyButton>
-                } />
+                {user.email && <CopyField value={user.email} />}
+                <CopyField value={user.id} />
+
                 <ActionIcon variant="default" size={"input-sm"} onClick={handleSignOut}>
                     <IconLogout />
                 </ActionIcon>

@@ -24,17 +24,20 @@ const Note = () => {
 
     const { notes, updateNote, getNote } = useNotes();
 
+
+    //Note page uses this updater to also show cloud syncing icon
     const handleNoteUpdate = (data: { [key: string]: string }) => {
         setNoteCloudSynced(false);
         debouncedUpdateNote(data);
     };
     const debouncedUpdateNote = useDebouncedCallback((data: { [key: string]: string }) => {
         if (note) {
-            const newNote = { ...note, ...data } as NoteType;
-            setNote(newNote);
-            updateNote(newNote);
+            setNote({ ...note, ...data } as NoteType);
+            updateNote({ id: note.id, ...data }); //only update necessary fields
         }
     }, 1000);
+
+
 
     useEffect(() => {
         setNoteCloudSynced(true);

@@ -39,7 +39,9 @@ const Notes = () => {
     };
 
     useEffect(() => {
+        if (userLoading || notesLoading) return;
         handleSearch();
+        console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw")
         /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [notesLoading, notes, userLoading, user]);
 

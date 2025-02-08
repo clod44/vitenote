@@ -7,6 +7,7 @@ export interface Note {
     content: string;
     color: string;
     archived: boolean;
+    public: boolean;
     updated_at: string;
     created_at: string;
 }
@@ -14,7 +15,7 @@ export interface Note {
 export interface NotesContextType {
     notes: Note[];
     createNote: () => Promise<string | null>;
-    updateNote: (note: Note) => Promise<void>;
+    updateNote: (notePartial: Partial<Note> & { id: number }) => Promise<void>;
     toggleArchiveNote: (note: Note) => Promise<void>;
     deleteNote: (id: number) => Promise<void>;
     isLoading: boolean;

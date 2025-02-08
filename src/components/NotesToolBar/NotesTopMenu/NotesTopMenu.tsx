@@ -38,7 +38,7 @@ const NotesTopMenu = () => {
                 >
                     {!user ? "Not logged in" : ""}
                     {user?.is_anonymous ? "Anonymous Account" : ""}
-                    {user?.email ? "No Email" : ""}
+                    {user?.email ? user.email : "No Email"}
                 </Menu.Item>
                 <Menu.Label>Application</Menu.Label>
                 <Menu.Item

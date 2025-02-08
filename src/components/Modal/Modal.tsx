@@ -5,10 +5,11 @@ import { IconSettings } from "@tabler/icons-react";
 
 export interface ModalRef {
     open: () => void,
-    close: () => void
+    close: () => void,
+    opened: boolean
 }
 
-const Modal = forwardRef(({ title = "Options", icon = <IconSettings />, children }: {
+const Modal = forwardRef(({ title = "Options", icon = <IconSettings size={16} />, children }: {
     title?: string,
     icon?: React.ReactNode,
     children?: React.ReactNode
@@ -17,7 +18,8 @@ const Modal = forwardRef(({ title = "Options", icon = <IconSettings />, children
 
     useImperativeHandle(ref, () => ({
         open: modalOpen,
-        close: modalClose
+        close: modalClose,
+        opened: modalOpened
     }));
 
     return (
@@ -52,7 +54,7 @@ const Modal = forwardRef(({ title = "Options", icon = <IconSettings />, children
             <Paper withBorder shadow="md" radius="md" p="md">
                 <Stack w={"100%"} align="stretch" gap={"md"}>
                     <Group justify="center" gap={"md"}>
-                        <Text c={"dimmed"} size="xs" className="flex items-center gap-2 flex-grow">
+                        <Text c={"dimmed"} size="xs" className="flex items-center gap-1 flex-grow">
                             {icon}
                             {title}
                         </Text>

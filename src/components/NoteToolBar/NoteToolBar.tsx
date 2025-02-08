@@ -33,7 +33,8 @@ const NoteToolBar = ({
                             noteCloudSynced
                                 ? <IconCloudCheck />
                                 : <IconCloudPause className="animate-pulse" />
-                        )}
+                        )
+                    }
                 />
                 <NoteSettings ref={noteSettingsRef} note={note} noteLoading={noteLoading} />
                 <ActionIcon

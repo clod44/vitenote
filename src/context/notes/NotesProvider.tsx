@@ -144,22 +144,35 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }
 
+
     /**
-     * Updates a note in the database.
-     * @param note The note to update. title, content and color will be updated.
-     * @throws An error if the user is not logged in or if the note could not be updated.
+     * Updates a note in the database with the specified fields.
+     * @param note - An object containing the fields to update and the ID of the note.
+     * @throws Will throw an error if the user is not logged in or if the update operation fails.
      */
-    const updateNote: NotesContextType['updateNote'] = async (note) => {
+    const updateNote: NotesContextType['updateNote'] = async (notePartial) => {
         try {
             if (!user) throw new Error('User not logged in');
-            console.log("updating note", note)
-            const { error } = await supabase.from('notes').update({ title: note.title, content: note.content, color: note.color }).eq('id', note.id);
+            console.log("updating note", notePartial);
+
+            // Filter out undefined/null values
+            const updateData = Object.fromEntries(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                Object.entries(notePartial).filter(([_, v]) => v !== undefined && v !== null)
+            );
+
+            const { error } = await supabase
+                .from('notes')
+                .update(updateData)
+                .eq('id', notePartial.id);
+
             if (error) throw error;
         } catch (error) {
             console.error('Error updating note:', error);
             throw error;
         }
-    }
+    };
+
 
     const toggleArchiveNote: NotesContextType['toggleArchiveNote'] = async (note) => {
         try {
