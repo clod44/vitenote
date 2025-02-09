@@ -3,8 +3,8 @@ import GenericTopBar from "@/components/GenericTopBar"
 import Loading from "@/components/Loading"
 import Login from "@/components/Login"
 import { useAuth } from "@/hooks/useAuth"
-import { ActionIcon, Avatar, CopyButton, Stack, Text, TextInput, Tooltip } from "@mantine/core"
-import { IconCheck, IconCopy, IconLogout } from "@tabler/icons-react"
+import { ActionIcon, Avatar, Stack, Text } from "@mantine/core"
+import { IconLogout } from "@tabler/icons-react"
 
 const Profile = () => {
     const { user, isLoading, signOut } = useAuth();
