@@ -13,35 +13,23 @@ const Notes = () => {
     const [showArchived, setShowArchived] = useState(false);
 
     const handleSearch = (keyword: string = "") => {
-        console.log("Keyword:", keyword, "Show Archived:", showArchived);
-        console.log("Notes:", notes);
-
         if (!notes) return;
-
         const filteredByArchived = notes.filter(note => {
-            console.log("Note Archived:", note.archived, "Show Archived:", showArchived);
             return note.archived === showArchived;
         });
-
-        console.log("Filtered By Archived:", filteredByArchived);
-
         if (keyword.length === 0) {
             setFilteredNotes(filteredByArchived);
             return;
         }
-
         const filteredByKeyword = filteredByArchived.filter(note =>
             note.title.toLowerCase().includes(keyword.toLowerCase())
         );
-
-        console.log("Final Filtered Notes:", filteredByKeyword);
         setFilteredNotes(filteredByKeyword);
     };
 
     useEffect(() => {
         if (userLoading || notesLoading) return;
         handleSearch();
-        console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw")
         /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [notesLoading, notes, userLoading, user]);
 

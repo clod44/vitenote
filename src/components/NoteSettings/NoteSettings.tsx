@@ -43,13 +43,14 @@ const NoteSettings = forwardRef(({
     }, [values])
 
     useEffect(() => {
-        if (note && modalRef.current?.opened)
+        if (note && modalRef.current) {
             setValues({
                 public: note.public,
                 color: note.color,
             });
+        }
         /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    }, []);
+    }, [noteLoading]);
 
     return (
         <Modal
