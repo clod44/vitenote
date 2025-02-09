@@ -32,30 +32,28 @@ const NoteCard = ({
                         "Untitled"
                     }
                 </Title>
-                <Group gap={"xs"} align="center" justify="center">
+                <Group gap={"xs"} align="center" justify="center" onClick={(e) => e.stopPropagation()}>
                     {note?.public &&
-                        <div onClick={(e) => e.stopPropagation()}>
-                            <Popover
-                                width={220}
-                                position="bottom"
-                                withArrow
-                                shadow="md">
-                                <Popover.Target >
-                                    <ActionIcon variant="default">
-                                        <IconWorld size={16} />
-                                    </ActionIcon>
-                                </Popover.Target>
-                                <Popover.Dropdown>
-                                    <Center pb={"md"} pt={"xs"}>
-                                        <ThemeIcon variant="transparent" c={"dimmed"} className="animate-pulse">
-                                            <IconUsersGroup size={32} />
-                                        </ThemeIcon>
-                                    </Center>
-                                    <Text size="xs" mb={"xs"}>This note is publicly accessible for reading with the following link</Text>
-                                    <CopyField size="xs" c={"dimmed"} value={window.location.origin + "/note/" + note.id} />
-                                </Popover.Dropdown>
-                            </Popover>
-                        </div>
+                        <Popover
+                            width={220}
+                            position="bottom"
+                            withArrow
+                            shadow="md">
+                            <Popover.Target >
+                                <ActionIcon variant="default">
+                                    <IconWorld size={16} />
+                                </ActionIcon>
+                            </Popover.Target>
+                            <Popover.Dropdown>
+                                <Center pb={"md"} pt={"xs"}>
+                                    <ThemeIcon variant="transparent" c={"dimmed"} className="animate-pulse">
+                                        <IconUsersGroup size={32} />
+                                    </ThemeIcon>
+                                </Center>
+                                <Text size="xs" mb={"xs"}>This note is publicly accessible for reading with the following link</Text>
+                                <CopyField size="xs" c={"dimmed"} value={window.location.origin + "/note/" + note.id} />
+                            </Popover.Dropdown>
+                        </Popover>
                     }
                     <NoteCardMenu note={note} />
                 </Group>

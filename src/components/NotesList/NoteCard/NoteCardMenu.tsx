@@ -45,9 +45,6 @@ const NoteCardMenu = ({
             <Menu shadow="md" width={200}>
                 <Menu.Target>
                     <ActionIcon
-                        onClick={(e) => {
-                            e.stopPropagation();
-                        }}
                         c={"dimmed"}
                         variant="default"
                         loading={loading}
@@ -66,7 +63,9 @@ const NoteCardMenu = ({
                     </Menu.Item>
                     <Menu.Item
                         leftSection={<IconPencil size={14} />}
-                        onClick={noteSettingsRef.current?.open}
+                        onClick={() => {
+                            noteSettingsRef.current?.open();
+                        }}
                     >
                         Customize
                     </Menu.Item>
