@@ -38,9 +38,21 @@ const Note = () => {
     }, 1000);
 
 
+    useEffect(() => {
+        if (note) {
+            editorRef.current?.setContent(note.content);
+        }
+    }, [note]);
+
 
     useEffect(() => {
         setNoteCloudSynced(true);
+        if (note) {
+            const updatedNote = notes.find((n) => n.id === note.id);
+            if (updatedNote) {
+                setNote(updatedNote);
+            }
+        }
     }, [notes]);
 
     useEffect(() => {
@@ -68,6 +80,7 @@ const Note = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
+    //we use client note in these.
     return (
         <>
             <NoteToolBar note={note} noteLoading={noteLoading} noteCloudSynced={noteCloudSynced} handleNoteUpdate={handleNoteUpdate} />
