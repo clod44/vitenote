@@ -160,6 +160,9 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 Object.entries(notePartial).filter(([_, v]) => v !== undefined && v !== null)
             );
+            if (typeof updateData.title === 'string' && updateData.title.trim().length === 0) {
+                updateData.title = "Untitled";
+            }
 
             const { error } = await supabase
                 .from('notes')
