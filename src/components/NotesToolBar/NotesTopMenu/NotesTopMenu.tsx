@@ -8,7 +8,7 @@ const NotesTopMenu = () => {
     const navigate = useNavigate();
     const { user, isLoading: userLoading } = useAuth();
     const handleNavigationClick = (path: string) => {
-        navigate(path);
+        navigate(path, { viewTransition: true });
     }
 
     const getAccountText = () => {

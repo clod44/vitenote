@@ -36,7 +36,7 @@ const NoteCardMenu = ({
     }
 
     const handleOpenNote = () => {
-        navigate(`/note/${note.id}`);
+        navigate(`/note/${note.id}`, { viewTransition: true });
     }
 
     return (

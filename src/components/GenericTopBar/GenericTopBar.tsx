@@ -16,7 +16,7 @@ const GenericTopBar = ({
     const navigate = useNavigate();
     const handleGoBack = () => {
         if (!backButtonUseHistory && backButtonPath) {
-            navigate(backButtonPath);
+            navigate(backButtonPath, { viewTransition: true });
             return;
         }
         window.history.back();
