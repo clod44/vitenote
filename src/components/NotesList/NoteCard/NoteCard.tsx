@@ -21,11 +21,13 @@ const NoteCard = ({
             withBorder
             shadow="md"
             radius="md"
-            p="md"
-            className="cursor-pointer hover:brightness-105"
+            className="cursor-pointer hover:brightness-105 relative overflow-hidden"
             onClick={handleCardClick}
         >
-            <Group wrap="nowrap">
+            <div className="absolute left-0 h-full w-1 " style={{
+                backgroundColor: "var(--mantine-color-" + note.color + "-filled)"
+            }} />
+            <Group wrap="nowrap" p={"md"}>
                 <Title order={4} lineClamp={1} className="grow">
                     {note.title.trim().length > 0 ?
                         note.title :
