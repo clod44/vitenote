@@ -11,6 +11,13 @@ const NotesTopMenu = () => {
         navigate(path);
     }
 
+    const getAccountText = () => {
+        if (!user) return "Not logged in";
+        if (user?.is_anonymous) return "Anonymous Account";
+        if (user) return user.email || "No Email";
+        return "Loading...";
+    };
+
     return (
 
         <Menu shadow="md" width={200} withArrow position="bottom-end">
@@ -36,9 +43,7 @@ const NotesTopMenu = () => {
                     leftSection={<IconUser size={14} />}
                     onClick={() => handleNavigationClick("/profile")}
                 >
-                    {!user ? "Not logged in" : ""}
-                    {user?.is_anonymous ? "Anonymous Account" : ""}
-                    {user?.email ? user.email : "No Email"}
+                    {getAccountText()}
                 </Menu.Item>
                 <Menu.Label>Application</Menu.Label>
                 <Menu.Item
