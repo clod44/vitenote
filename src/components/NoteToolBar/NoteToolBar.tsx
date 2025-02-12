@@ -1,10 +1,10 @@
 import GenericTopBar from "@/components/GenericTopBar"
 import { Note } from "@/context/notes"
-import { ActionIcon, Center, Divider, Group, Popover, Space, Text, TextInput, ThemeIcon } from "@mantine/core";
-import { IconCloudCheck, IconCloudDown, IconCloudPause, IconDotsVertical, IconUsersGroup, IconWorld, IconWorldSearch } from "@tabler/icons-react"
+import { ActionIcon, Center, Popover, Space, Text, TextInput, ThemeIcon } from "@mantine/core";
+import { IconCloudCheck, IconCloudDown, IconCloudPause, IconDotsVertical, IconUsersGroup, IconWorld } from "@tabler/icons-react"
 import NoteSettings, { NoteSettingsRef } from "@/components/NoteSettings"
 import { useRef } from "react"
-import CopyField from "../CopyField";
+import CopyField from "@/components/CopyField";
 
 
 const NoteToolBar = ({

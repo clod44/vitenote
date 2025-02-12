@@ -48,6 +48,7 @@ const Note = () => {
                 alert("Note not found on server to be able to update the client");
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [notes]);
 
     //initial note data fetch
