@@ -15,14 +15,6 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js");
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-window.addEventListener("beforeinstallprompt", (event: any) => {
-    event.preventDefault();
-    const deferredPrompt = event;
-    deferredPrompt.prompt();
-});
-
-
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <MantineProvider defaultColorScheme="dark" theme={theme}>
