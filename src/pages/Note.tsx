@@ -1,6 +1,6 @@
 import TextEditor from "@/components/TextEditor";
 import { useNotes } from "@/hooks/useNotes";
-import { useDebouncedCallback, useDebouncedState } from "@mantine/hooks";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { useParams } from "react-router-dom";
 import { Note as NoteType } from "@/context/notes";
 import { useEffect, useRef, useState } from "react";
@@ -8,53 +8,49 @@ import { TextEditorRef } from "@/components/TextEditor/TextEditor";
 import Loading from "@/components/Loading";
 import SomethingWentWrong from "@/components/SomethingWentWrong";
 import NoteToolBar from "@/components/NoteToolBar";
+import { useAuth } from "@/hooks/useAuth";
 
 const Note = () => {
     const { id } = useParams();
-    const editorRef = useRef<TextEditorRef | null>(null);
-    const [note, setNote] = useDebouncedState<NoteType | null>(null, 1000, { leading: true });
-    const [noteLoading, setNoteLoading] = useState(true);
-    const [noteCloudSynced, setNoteCloudSynced] = useState(false);
-
-    /* 
-    TODO: tidy up the Note component
-    this is retarded but otherwise editor initializes late and cant catch up with editable flag setting
-    */
-    const [isEditable, setIsEditable] = useState(false);
-
     const { notes, updateNote, getNote } = useNotes();
+    const { user } = useAuth();
+
+    const editorRef = useRef<TextEditorRef | null>(null);
+
+    const [clientNote, setClientNote] = useState<NoteType | null>(null);
+    const [noteCloudSynced, setNoteCloudSynced] = useState(false);
+    const [isOwner, setIsOwner] = useState(false);
+    const [noteLoading, setNoteLoading] = useState(true);
 
 
-    //Note page uses this updater to also show cloud syncing icon
-    const handleNoteUpdate = (data: { [key: string]: string }) => {
+    const handleNoteUpdate = (data: Partial<NoteType>) => {
         setNoteCloudSynced(false);
+        if (!clientNote || !isOwner || noteLoading) return;
         debouncedUpdateNote(data);
     };
-    const debouncedUpdateNote = useDebouncedCallback((data: { [key: string]: string }) => {
-        if (note) {
-            setNote({ ...note, ...data } as NoteType);
-            updateNote({ id: note.id, ...data }); //only update necessary fields
-        }
+
+    const debouncedUpdateNote = useDebouncedCallback((data: Partial<NoteType>) => {
+        if (!clientNote) return;
+        const updatedNote = { ...clientNote, ...data };
+        setClientNote(updatedNote);
+        updateNote({ id: updatedNote.id, ...data });
     }, 1000);
 
-
+    //update echo with new data. this is required for inter-component data update visibility.
     useEffect(() => {
-        if (note) {
-            editorRef.current?.setContent(note.content);
-        }
-    }, [note]);
-
-
-    useEffect(() => {
+        if (!clientNote || !user || clientNote.user_id !== user.id) return;
         setNoteCloudSynced(true);
-        if (note) {
-            const updatedNote = notes.find((n) => n.id === note.id);
+        if (clientNote) {
+            const updatedNote = notes.find((n) => n.id === clientNote.id);
             if (updatedNote) {
-                setNote(updatedNote);
+                setClientNote(updatedNote);
+            } else {
+                alert("Note not found on server to be able to update the client");
             }
         }
     }, [notes]);
 
+    //initial note data fetch
     useEffect(() => {
         const retrieveNote = async () => {
             if (!id) return;
@@ -63,11 +59,11 @@ const Note = () => {
                 const note = await getNote(parseInt(id));
                 if (note) {
                     editorRef.current?.setContent(note.content);
-                    setIsEditable(true);
-                    setNote(note);
+                    setIsOwner(note.user_id === user?.id);
+                    setClientNote(note);
                 } else {
-                    setIsEditable(false);
-                    setNote(null);
+                    alert("Note not found on server to be able to retrieve");
+                    setClientNote(null);
                 }
             } catch (error) {
                 console.error(error);
@@ -83,18 +79,25 @@ const Note = () => {
     //we use client note in these.
     return (
         <>
-            <NoteToolBar note={note} noteLoading={noteLoading} noteCloudSynced={noteCloudSynced} handleNoteUpdate={handleNoteUpdate} />
+            <NoteToolBar
+                editable={isOwner}
+                isPublic={!isOwner}
+                note={clientNote}
+                noteLoading={noteLoading}
+                noteCloudSynced={noteCloudSynced}
+                handleNoteUpdate={handleNoteUpdate}
+            />
             {noteLoading ? (
                 <Loading label="Retrieving your note..." />
             ) : (
-                note == null ? (
+                clientNote == null ? (
                     <SomethingWentWrong />
                 ) : (
                     <TextEditor
-                        defaultValue={note?.content || ""}
+                        defaultValue={clientNote?.content || ""}
                         onChange={(value) => handleNoteUpdate({ content: value })}
                         ref={editorRef}
-                        isEditable={isEditable}
+                        isEditable={isOwner}
                     />
                 )
             )}
