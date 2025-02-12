@@ -12,6 +12,11 @@ Yet another notes webapp optimized for mobile view made with react.
 - [TailwindCSS](https://tailwindcss.com/)
 - [TailwindCSS Animated](https://www.tailwindcss-animated.com/)
 
+
+<blockQuote>
+This project is still under heavy development!
+</blockQuote>
+
 <hr>
 <center>
 
