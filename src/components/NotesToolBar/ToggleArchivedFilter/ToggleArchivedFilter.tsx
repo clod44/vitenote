@@ -15,7 +15,11 @@ const ToggleArchivedFilter = ({
             variant="default"
             onClick={() => setShowArchived(!showArchived)}
         >
-            {showArchived ? <IconArchiveFilled className="animate-fade" /> : <IconArchive className="animate-fade" />}
+            {showArchived ?
+                <IconArchiveFilled />
+                :
+                <IconArchive />
+            }
         </ActionIcon>
     )
 }
