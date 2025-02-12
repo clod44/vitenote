@@ -1,33 +1,30 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { About, Notes, Note, Profile, NotFound, Settings } from "./pages/index.tsx";
 import { Stack } from "@mantine/core";
+const Layout = () => (
+    <div className="fixed left-0 top-0 w-full h-full content">
+        <Stack w="100%" h="100%" align="stretch" justify="center" gap="sm">
+            <Outlet />
+        </Stack>
+    </div>
+);
 
+const router = createBrowserRouter([
+    {
+        element: <Layout />,
+        children: [
+            { index: true, path: "/", element: <Notes /> },
+            { path: "/note/:id?", element: <Note /> },
+            { path: "/profile", element: <Profile /> },
+            { path: "/settings", element: <Settings /> },
+            { path: "/about", element: <About /> },
+            { path: "*", element: <NotFound /> },
+        ],
+    },
+]);
 
 function App() {
-    return (
-        <>
-            <BrowserRouter>
-                <div className="fixed left-0 top-0 w-full h-full">
-                    <Stack
-                        w={"100%"}
-                        h={"100%"}
-                        align="stretch"
-                        justify="center"
-                        gap="sm"
-                    >
-                        <Routes>
-                            <Route path="/" element={<Notes />} />
-                            <Route path="/note/:id?" element={<Note />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="/settings" element={<Settings />} />
-                            <Route path="/about" element={<About />} />
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
-                    </Stack>
-                </div>
-            </BrowserRouter >
-        </>
-    )
+    return <RouterProvider router={router} />;
 }
 
 export default App
