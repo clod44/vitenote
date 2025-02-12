@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Menu, ActionIcon, Avatar, Indicator } from "@mantine/core";
+import { Menu, ActionIcon, Avatar } from "@mantine/core";
 import { IconInfoCircle, IconSettings, IconUser } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
