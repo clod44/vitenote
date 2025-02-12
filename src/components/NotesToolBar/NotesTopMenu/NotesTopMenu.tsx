@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Menu, ActionIcon, Avatar } from "@mantine/core";
+import { Menu, ActionIcon, Avatar, Indicator } from "@mantine/core";
 import { IconInfoCircle, IconSettings, IconUser } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
@@ -22,26 +22,27 @@ const NotesTopMenu = () => {
 
         <Menu shadow="md" width={200} withArrow position="bottom-end">
             <Menu.Target>
-                <div className="relative">
-                    <ActionIcon
-                        size={"input-sm"}
-                        variant="default"
-                    >
-                        <Avatar variant="transparent" radius={0} src={null} />
-                    </ActionIcon>
-                    {!user && !userLoading &&
-                        <div className={`absolute top-1/4 w-1/2 left-1/4 h-1/2 -z-10 animate-pulse animate-duration-[2000ms]`} style={{
-                            boxShadow: "0 0 3em .5em rgba(255,255,255, 1)"
-                        }} />
-                    }
-                </div>
+                <ActionIcon
+                    size={"input-sm"}
+                    variant="default"
+                    style={(!userLoading && !user) ? {
+                        boxShadow: "0 0 1em 0em var(--mantine-color-gray-5)",
+                    } : {}}
+                >
+                    <Avatar variant="transparent" radius={0} src={null} />
+                </ActionIcon>
+
             </Menu.Target>
 
             <Menu.Dropdown>
                 <Menu.Label>Account</Menu.Label>
+
                 <Menu.Item
                     leftSection={<IconUser size={14} />}
                     onClick={() => handleNavigationClick("/profile")}
+                    style={(!userLoading && !user) ? {
+                        boxShadow: "0 0 1em 0em var(--mantine-color-gray-5)",
+                    } : {}}
                 >
                     {getAccountText()}
                 </Menu.Item>
