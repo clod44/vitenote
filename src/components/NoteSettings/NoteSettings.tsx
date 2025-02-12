@@ -2,15 +2,13 @@ import { Note } from "@/context/notes";
 import Modal, { ModalRef } from "@/components/Modal";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { IconCheck, IconCopy, IconLoader, IconLock, IconSettings, IconWorld } from "@tabler/icons-react";
-import { ActionIcon, CopyButton, Group, NativeSelect, SimpleGrid, Switch, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, CopyButton, Group, SimpleGrid, Switch, Text, TextInput, Tooltip } from "@mantine/core";
 import Loading from "@/components/Loading";
 import { useNotes } from "@/hooks/useNotes";
+import ColorSelector from "@/components/ColorSelector";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NoteSettingsRef extends ModalRef { }
-
-import { DEFAULT_THEME } from "@mantine/core";
-const colors = Object.keys(DEFAULT_THEME.colors);
 
 const NoteSettings = forwardRef(({
     note,
@@ -21,7 +19,7 @@ const NoteSettings = forwardRef(({
 }, ref) => {
     const [values, setValues] = useState<Partial<Note>>({
         public: note?.public || false,
-        color: note?.color || colors[1],
+        color: note?.color || "gray",
     });
     const [isLoading, setIsLoading] = useState(false);
     const { updateNote } = useNotes();
@@ -93,11 +91,9 @@ const NoteSettings = forwardRef(({
                     }
                     <Group align="center" gap={"md"} justify="space-between">
                         <Text size="sm">Color</Text>
-                        <NativeSelect
-                            size="xs"
-                            data={colors}
-                            value={values.color}
-                            onChange={(e) => setValues({ ...values, color: e.currentTarget.value })}
+                        <ColorSelector
+                            defaultValue={values.color}
+                            onChange={(color) => setValues({ ...values, color })}
                         />
                     </Group>
                 </SimpleGrid>
