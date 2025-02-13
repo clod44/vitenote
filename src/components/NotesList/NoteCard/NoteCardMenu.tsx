@@ -8,7 +8,9 @@ import {
     IconDotsVertical,
     IconArchive,
     IconPencil,
-    IconArchiveOff
+    IconArchiveOff,
+    IconPinned,
+    IconPinnedFilled
 } from '@tabler/icons-react';
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +20,7 @@ const NoteCardMenu = ({
 }: {
     note: Note,
 }) => {
-    const { deleteNote, toggleArchiveNote } = useNotes();
+    const { deleteNote, toggleArchiveNote, togglePinnedNote } = useNotes();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const noteSettingsRef = useRef<NoteSettingsRef>(null);
@@ -32,6 +34,12 @@ const NoteCardMenu = ({
     const handleToggleArchiveNote = async () => {
         setLoading(true);
         await toggleArchiveNote(note);
+        setLoading(false);
+    }
+
+    const handleTogglePinnedNote = async () => {
+        setLoading(true);
+        await togglePinnedNote(note);
         setLoading(false);
     }
 
@@ -68,6 +76,12 @@ const NoteCardMenu = ({
                         }}
                     >
                         Customize
+                    </Menu.Item>
+                    <Menu.Item
+                        leftSection={note.pinned ? <IconPinnedFilled size={14} /> : <IconPinned size={14} />}
+                        onClick={handleTogglePinnedNote}
+                    >
+                        {note.pinned ? "Unpin" : "Pin"}
                     </Menu.Item>
                     <Menu.Item
                         leftSection={note.archived ? <IconArchiveOff size={14} /> : <IconArchive size={14} />}

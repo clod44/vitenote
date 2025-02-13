@@ -16,7 +16,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const { data, error } = await supabase.from('notes')
             .select('*')
             .eq('user_id', user?.id)
-            .order('updated_at', { ascending: false });
+            .order('updated_at', { ascending: false })
+            .order('pinned', { ascending: false });
         if (error) {
             console.error('Error fetching notes:', error.message);
             setNotes([]);
@@ -188,6 +189,17 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }
 
+    const togglePinnedNote: NotesContextType['togglePinnedNote'] = async (note) => {
+        try {
+            if (!user) throw new Error('User not logged in');
+            const { error } = await supabase.from('notes').update({ pinned: !note.pinned }).eq('id', note.id);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error pinning note:', error);
+            throw error;
+        }
+    }
+
     const deleteNote: NotesContextType['deleteNote'] = async (id) => {
         try {
             if (!user) throw new Error('User not logged in');
@@ -205,6 +217,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             createNote,
             updateNote,
             toggleArchiveNote,
+            togglePinnedNote,
             deleteNote,
             isLoading,
             getNote
