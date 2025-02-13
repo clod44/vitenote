@@ -10,7 +10,8 @@ import {
     IconPencil,
     IconArchiveOff,
     IconPinned,
-    IconPinnedFilled
+    IconPinnedFilled,
+    IconRestore
 } from '@tabler/icons-react';
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,14 +21,14 @@ const NoteCardMenu = ({
 }: {
     note: Note,
 }) => {
-    const { deleteNote, toggleArchiveNote, togglePinnedNote } = useNotes();
+    const { toggleTrashNote, toggleArchiveNote, togglePinnedNote } = useNotes();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const noteSettingsRef = useRef<NoteSettingsRef>(null);
 
-    const handleDeleteNote = async () => {
+    const handleToggleTrashNote = async () => {
         setLoading(true);
-        await deleteNote(note.id);
+        await toggleTrashNote(note.id, !note.trashed);
         setLoading(false);
     }
 
@@ -92,11 +93,11 @@ const NoteCardMenu = ({
 
                     <Menu.Divider />
                     <Menu.Item
-                        color="red"
-                        onClick={handleDeleteNote}
-                        leftSection={<IconTrash size={14} />}
+                        color={note.trashed ? "green" : "red"}
+                        onClick={handleToggleTrashNote}
+                        leftSection={note.trashed ? <IconRestore size={14} /> : <IconTrash size={14} />}
                     >
-                        Delete
+                        {note.trashed ? "Restore" : "Trash"}
                     </Menu.Item>
                 </Menu.Dropdown>
             </Menu>

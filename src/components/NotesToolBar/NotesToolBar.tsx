@@ -28,6 +28,7 @@ const NotesToolBar = ({
         <div className="absolute left-0 top-0 w-full z-50">
             <BackgroundGradient deg={180} start={50}>
                 <Group justify="center" gap={"sm"} p={"sm"} wrap="nowrap">
+
                     <ToggleArchivedFilter showArchived={showArchived} setShowArchived={setShowArchived} />
                     <TextInput
                         className="grow"

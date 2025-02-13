@@ -76,7 +76,9 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const applyServerChangesUpdate = (payload: RealtimePostgresUpdatePayload<Note>) => {
         const { new: newNote } = payload;
         setNotes((prevNotes) =>
-            prevNotes.map((note) => (note.id === newNote.id ? newNote : note))
+            prevNotes
+                .map((note) => (note.id === newNote.id ? newNote : note))
+                .filter((note) => !note.trashed)
         );
     };
 
@@ -90,10 +92,13 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
      * @param id The id of the note to retrieve
      * @returns The retrieved note or null if not found
      * @throws An error if the note could not be retrieved
+     * 
+     * Unauthorized users / strangers can't access trashed notes even if notes are public
+     * Authorized users should use getTrashedNotes()
      */
     const fetchNote = async (id: number) => {
         try {
-            const { data, error } = await supabase.from('notes').select('*').eq('id', id).single();
+            const { data, error } = await supabase.from('notes').select('*').eq('id', id).eq('trashed', false).single();
             if (error) throw error;
             return data || null;
         } catch (error) {
@@ -118,6 +123,24 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             return dbNote || null;
         } catch (error) {
             console.error('Error fetching note:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Retrieves trashed notes from the database
+     * @returns An array of trashed notes, ordered by last updated time
+     * @throws An error if the trashed notes could not be retrieved
+     * 
+     * returned array must be handled manually with states if necessary.
+     */
+    const getTrashedNotes: NotesContextType['getTrashedNotes'] = async () => {
+        try {
+            const { data, error } = await supabase.from('notes').select('*').eq('user_id', user?.id).eq('trashed', true).order('updated_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching trashed notes:', error);
             throw error;
         }
     }
@@ -211,6 +234,17 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }
 
+    const toggleTrashNote: NotesContextType['toggleTrashNote'] = async (id, trashed) => {
+        try {
+            if (!user) throw new Error('User not logged in');
+            const { error } = await supabase.from('notes').update({ trashed: trashed }).eq('id', id);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error sending note to trash:', error);
+            throw error;
+        }
+    }
+
     return (
         <NotesContext.Provider value={{
             notes,
@@ -218,6 +252,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             updateNote,
             toggleArchiveNote,
             togglePinnedNote,
+            toggleTrashNote,
+            getTrashedNotes,
             deleteNote,
             isLoading,
             getNote
