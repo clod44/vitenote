@@ -13,6 +13,15 @@ const FoldersAndMore = ({
 }) => {
     const { showTrashed, setShowTrashed } = useNotes();
 
+    const MenuIcon = () => {
+        if (showTrashed) return <IconTrash />;
+        if (showArchived) {
+            return <IconArchive />;
+        } else {
+            return <IconFile />
+        }
+    }
+
     return (
         <Menu shadow="md" width={200} withArrow position="bottom-start">
             <Menu.Target>
@@ -20,13 +29,13 @@ const FoldersAndMore = ({
                     size={"input-sm"}
                     variant="default"
                 >
-                    <IconTable />
+                    <MenuIcon />
                 </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Label>Main</Menu.Label>
                 <Menu.Item
-                    leftSection={!showArchived ? <IconFileFilled size={14} /> : <IconFile size={14} />}
+                    leftSection={!showArchived && !showTrashed ? <IconFileFilled size={14} /> : <IconFile size={14} />}
                     onClick={() => {
                         setShowArchived(false)
                         setShowTrashed(false)
