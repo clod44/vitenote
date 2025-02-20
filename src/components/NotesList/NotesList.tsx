@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import Loading from "@/components/Loading";
-import { IconSparkles, IconUser, IconUserCancel } from "@tabler/icons-react";
-import { ScrollArea, Space, Stack, Text } from "@mantine/core";
+import { IconSparkles, IconUserCancel } from "@tabler/icons-react";
+import { ScrollArea, Space, Stack } from "@mantine/core";
 import NoteCard from "./NoteCard";
 import { Note } from "@/context/notes";
 import IconLabel from "@/components/IconLabel";
