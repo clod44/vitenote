@@ -1,9 +1,10 @@
 import { useAuth } from "@/hooks/useAuth";
 import Loading from "@/components/Loading";
-import { IconCookieMan, IconSparkles } from "@tabler/icons-react";
+import { IconSparkles } from "@tabler/icons-react";
 import { ScrollArea, Space, Stack, Text } from "@mantine/core";
 import NoteCard from "./NoteCard";
 import { Note } from "@/context/notes";
+import SomethingWentWrong from "@/components/SomethingWentWrong";
 
 
 
@@ -17,12 +18,7 @@ const NotesList = ({
     const { user } = useAuth();
 
     if (notesLoading) return <Loading />;
-    if (!user) return (
-        <>
-            <IconCookieMan size={32} className="mx-auto" />
-            <Text c="dimmed" size="xs" className="text-center">Not logged in</Text>
-        </>
-    );
+    if (!user) return <SomethingWentWrong label={"Not logged in"} />
     return (
         <>
             {notes.length === 0 ? (
