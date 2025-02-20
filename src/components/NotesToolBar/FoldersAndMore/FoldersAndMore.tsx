@@ -1,6 +1,6 @@
 import { useNotes } from "@/hooks/useNotes";
 import { Menu, ActionIcon } from "@mantine/core";
-import { IconArchive, IconArchiveFilled, IconFile, IconFileFilled, IconTable, IconTrash, IconTrashFilled } from "@tabler/icons-react";
+import { IconArchive, IconArchiveFilled, IconFile, IconFileFilled, IconTrash, IconTrashFilled } from "@tabler/icons-react";
 
 const FoldersAndMore = ({
     showArchived = false,
