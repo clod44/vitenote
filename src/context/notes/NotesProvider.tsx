@@ -241,6 +241,34 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }
 
+
+
+    /**
+     * Filters the notes based on the given keyword and archived state.
+     * @param keyword the keyword to search for in the note titles. If empty, no filtering is done.
+     * @param archived whether to filter notes by archived state or not. If true, only archived notes are returned.
+     * @returns the filtered notes
+     * should be used to access notes instead. allows instant ui feedback.
+     */
+
+    const filterNotes: NotesContextType['filterNotes'] = (keyword = "", archived = false) => {
+        if (!notes) return [];
+        const filteredByTrashed = notes.filter(note => note.trashed === showTrashed);
+        //don't filter by "archived" if we are looking inside the trash bin
+        const filteredByArchived = showTrashed ?
+            filteredByTrashed :
+            filteredByTrashed.filter(note => {
+                return note.archived === archived;
+            });
+        //don't filter by keyword if no keyword is given
+        const filteredByKeyword = keyword.length === 0 ?
+            filteredByArchived :
+            filteredByArchived.filter(note =>
+                note.title.toLowerCase().includes(keyword.toLowerCase())
+            );
+        return filteredByKeyword || [];
+    };
+
     return (
         <NotesContext.Provider value={{
             notes,
@@ -253,6 +281,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setShowTrashed,
             deleteNote,
             fetchNotes,
+            filterNotes,
             isLoading,
             getNote
         }}>
