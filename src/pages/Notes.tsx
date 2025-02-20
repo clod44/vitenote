@@ -15,12 +15,9 @@ const Notes = () => {
 
     /**
      * Handles search and filtering of notes based on the keyword and settings.
-     * 
      * @param {string} [keyword=""] - The keyword to search for in the notes' titles.
-     * 
      * also responsible for instant ui feedback of archiving/deleting etc 
      */
-
     const handleSearch = (keyword: string = "") => {
         if (!notes) return;
         //when we are not looking at the trashbin and we set one of the note as trashed, we should filter it out here
