@@ -1,5 +1,5 @@
 import { useForm } from "@mantine/form";
-import GenericTopBar from "../GenericTopBar"
+import { GenericTopBar } from "@/components/TopBars"
 import { ActionIcon, Button, Checkbox, Group, PasswordInput, Stack, Tabs, TextInput, Title, Tooltip } from "@mantine/core";
 import { IconPlus, IconSpy, IconUser, IconWorldBolt } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/useAuth";

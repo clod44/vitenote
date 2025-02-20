@@ -1,4 +1,4 @@
-import GenericTopBar from "@/components/GenericTopBar"
+import { GenericTopBar } from "@/components/TopBars"
 import { ActionIcon, Stack, Text, Title } from "@mantine/core"
 import { IconBrandGithub } from "@tabler/icons-react"
 

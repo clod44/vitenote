@@ -1,4 +1,4 @@
-import GenericTopBar from "@/components/GenericTopBar"
+import { GenericTopBar } from "@/components/TopBars"
 
 const NotFound = () => {
     return (

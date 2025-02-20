@@ -1,4 +1,4 @@
-import GenericTopBar from "@/components/GenericTopBar"
+import { GenericTopBar } from "@/components/TopBars"
 import { Note } from "@/context/notes"
 import { ActionIcon, Center, Popover, Space, Text, TextInput, ThemeIcon } from "@mantine/core";
 import { IconCloudCheck, IconCloudDown, IconCloudPause, IconDotsVertical, IconUsersGroup, IconWorld } from "@tabler/icons-react"
@@ -7,7 +7,7 @@ import { useRef } from "react"
 import CopyField from "@/components/CopyField";
 
 
-const NoteToolBar = ({
+const NoteTopBar = ({
     note,
     noteLoading = true,
     editable = false,
@@ -88,4 +88,4 @@ const NoteToolBar = ({
     )
 }
 
-export default NoteToolBar
+export default NoteTopBar

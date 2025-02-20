@@ -6,7 +6,7 @@ import { Note as NoteType } from "@/context/notes";
 import { useEffect, useRef, useState } from "react";
 import { TextEditorRef } from "@/components/TextEditor/TextEditor";
 import Loading from "@/components/Loading";
-import NoteToolBar from "@/components/NoteToolBar";
+import { NoteTopBar } from "@/components/TopBars";
 import { useAuth } from "@/hooks/useAuth";
 import IconLabel from "@/components/IconLabel";
 import { IconSkull } from "@tabler/icons-react";
@@ -81,7 +81,7 @@ const Note = () => {
     //we use client note in these.
     return (
         <>
-            <NoteToolBar
+            <NoteTopBar
                 editable={isOwner}
                 isPublic={!isOwner}
                 note={clientNote}

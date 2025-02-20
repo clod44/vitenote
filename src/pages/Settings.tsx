@@ -1,4 +1,4 @@
-import GenericTopBar from "@/components/GenericTopBar"
+import { GenericTopBar } from "@/components/TopBars"
 import { Stack, Switch, useMantineColorScheme } from "@mantine/core"
 import { IconMoonStars, IconSun } from "@tabler/icons-react"
 

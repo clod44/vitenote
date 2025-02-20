@@ -1,5 +1,5 @@
 import CopyField from "@/components/CopyField"
-import GenericTopBar from "@/components/GenericTopBar"
+import { GenericTopBar } from "@/components/TopBars"
 import Loading from "@/components/Loading"
 import Login from "@/components/Login"
 import { useAuth } from "@/hooks/useAuth"

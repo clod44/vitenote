@@ -1,6 +1,6 @@
 import CreateNoteFab from "@/components/CreateNoteFab";
 import NotesList from "@/components/NotesList";
-import NotesToolBar from "@/components/NotesToolBar";
+import { NotesTopBar } from "@/components/TopBars";
 import PullToRefresh from "@/components/PullToRefresh";
 import { Note } from "@/context/notes";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,7 +26,7 @@ const Notes = () => {
 
     return (
         <>
-            <NotesToolBar
+            <NotesTopBar
                 handleSearch={handleSearch}
                 showArchived={showArchived}
                 setShowArchived={setShowArchived}

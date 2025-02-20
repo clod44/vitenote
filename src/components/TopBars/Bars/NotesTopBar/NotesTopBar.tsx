@@ -6,7 +6,7 @@ import BackgroundGradient from "@/components/BackgroundGradient/"
 import FoldersAndMore from "./FoldersAndMore"
 import { useNotes } from "@/hooks/useNotes"
 
-const NotesToolBar = ({
+const NotesTopBar = ({
     handleSearch = () => { },
     showArchived = false,
     setShowArchived = () => { },
@@ -61,4 +61,4 @@ const NotesToolBar = ({
     )
 }
 
-export default NotesToolBar
+export default NotesTopBar
