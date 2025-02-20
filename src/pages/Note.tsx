@@ -6,9 +6,10 @@ import { Note as NoteType } from "@/context/notes";
 import { useEffect, useRef, useState } from "react";
 import { TextEditorRef } from "@/components/TextEditor/TextEditor";
 import Loading from "@/components/Loading";
-import SomethingWentWrong from "@/components/SomethingWentWrong";
 import NoteToolBar from "@/components/NoteToolBar";
 import { useAuth } from "@/hooks/useAuth";
+import IconLabel from "@/components/IconLabel";
+import { IconSkull } from "@tabler/icons-react";
 
 const Note = () => {
     const { id } = useParams();
@@ -92,7 +93,7 @@ const Note = () => {
                 <Loading label="Retrieving your note..." />
             ) : (
                 clientNote == null ? (
-                    <SomethingWentWrong />
+                    <IconLabel label="Note not found" icon={<IconSkull size={32} />} />
                 ) : (
                     <TextEditor
                         defaultValue={clientNote?.content || ""}

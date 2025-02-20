@@ -1,11 +1,10 @@
 import { useAuth } from "@/hooks/useAuth";
 import Loading from "@/components/Loading";
-import { IconSparkles } from "@tabler/icons-react";
+import { IconSparkles, IconUser, IconUserCancel } from "@tabler/icons-react";
 import { ScrollArea, Space, Stack, Text } from "@mantine/core";
 import NoteCard from "./NoteCard";
 import { Note } from "@/context/notes";
-import SomethingWentWrong from "@/components/SomethingWentWrong";
-
+import IconLabel from "@/components/IconLabel";
 
 
 const NotesList = ({
@@ -18,14 +17,11 @@ const NotesList = ({
     const { user } = useAuth();
 
     if (notesLoading) return <Loading />;
-    if (!user) return <SomethingWentWrong label={"Not logged in"} />
+    if (!user) return <IconLabel label="Not logged in" icon={<IconUserCancel size={32} />} />
     return (
         <>
             {notes.length === 0 ? (
-                <>
-                    <IconSparkles size={32} className="mx-auto" />
-                    <Text c="dimmed" size="xs" className="text-center">No notes</Text>
-                </>
+                <IconLabel label="No notes found" icon={<IconSparkles size={32} />} />
             ) : (
                 < ScrollArea w={"100%"} h={"100%"} type="never">
                     <Space h={"xl"} my={"md"} />
