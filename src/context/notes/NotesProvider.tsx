@@ -18,13 +18,18 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             .select('*')
             .eq('user_id', user?.id)
             .eq('trashed', showTrashed)
-            .order('updated_at', { ascending: false })
-            .order('pinned', { ascending: false });
+            //.order('pinned', { ascending: false }) //supabase does not support multiple orders this will be handled in client
+            .order('updated_at', { ascending: false });
         if (error) {
             console.error('Error fetching notes:', error.message);
             setNotes([]);
         } else {
-            setNotes(data || []);
+            const sortedNotes = data?.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return 0;
+            });
+            setNotes(sortedNotes || []);
         }
         setIsLoading(false);
     };
