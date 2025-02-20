@@ -22,7 +22,8 @@ export interface NotesContextType {
     toggleArchiveNote: (note: Note) => Promise<void>;
     togglePinnedNote: (note: Note) => Promise<void>;
     toggleTrashNote: (id: number, trashed: boolean) => Promise<void>;
-    getTrashedNotes: () => Promise<Note[]>;
+    showTrashed: boolean;
+    setShowTrashed: (trashed: boolean) => void;
     deleteNote: (id: number) => Promise<void>;
     isLoading: boolean;
     getNote: (id: number) => Promise<Note | null>;

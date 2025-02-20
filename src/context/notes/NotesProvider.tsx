@@ -9,6 +9,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const { user } = useAuth();
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [showTrashed, setShowTrashed] = useState<boolean>(false);
 
     const fetchNotes = async () => {
         setIsLoading(true);
@@ -16,6 +17,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const { data, error } = await supabase.from('notes')
             .select('*')
             .eq('user_id', user?.id)
+            .eq('trashed', showTrashed)
             .order('updated_at', { ascending: false })
             .order('pinned', { ascending: false });
         if (error) {
@@ -28,7 +30,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     useEffect(() => {
-        fetchNotes();
+        //fetchNotes();
         const notesSubscription = supabase.channel('notes-all-changes')
             .on(
                 'postgres_changes',
@@ -48,7 +50,13 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             authSubscription.unsubscribe()
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [user]);
+
+    useEffect(() => {
+        fetchNotes();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showTrashed]); //this will also run when mounted.
+
 
     const applyServerChanges = (payload: RealtimePostgresChangesPayload<Note>) => {
         const { eventType } = payload;
@@ -78,7 +86,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setNotes((prevNotes) =>
             prevNotes
                 .map((note) => (note.id === newNote.id ? newNote : note))
-                .filter((note) => !note.trashed)
+            //let ui handle immediate archive/trashed note disappearing. see SearchKeyword function in pages/Note.tsx
+            //.filter((note) => note.trashed === showTrashed) 
         );
     };
 
@@ -123,24 +132,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             return dbNote || null;
         } catch (error) {
             console.error('Error fetching note:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Retrieves trashed notes from the database
-     * @returns An array of trashed notes, ordered by last updated time
-     * @throws An error if the trashed notes could not be retrieved
-     * 
-     * returned array must be handled manually with states if necessary.
-     */
-    const getTrashedNotes: NotesContextType['getTrashedNotes'] = async () => {
-        try {
-            const { data, error } = await supabase.from('notes').select('*').eq('user_id', user?.id).eq('trashed', true).order('updated_at', { ascending: false });
-            if (error) throw error;
-            return data || [];
-        } catch (error) {
-            console.error('Error fetching trashed notes:', error);
             throw error;
         }
     }
@@ -253,7 +244,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             toggleArchiveNote,
             togglePinnedNote,
             toggleTrashNote,
-            getTrashedNotes,
+            showTrashed,
+            setShowTrashed,
             deleteNote,
             isLoading,
             getNote

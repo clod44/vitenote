@@ -1,21 +1,23 @@
 import { Badge, Group, TextInput } from "@mantine/core"
 import { IconSearch } from "@tabler/icons-react"
 import NotesTopMenu from "./NotesTopMenu"
-import ToggleArchivedFilter from "./ToggleArchivedFilter"
 import { useEffect, useState } from "react"
 import BackgroundGradient from "@/components/BackgroundGradient/"
+import FoldersAndMore from "./FoldersAndMore"
+import { useNotes } from "@/hooks/useNotes"
 
 const NotesToolBar = ({
+    handleSearch = () => { },
     showArchived = false,
     setShowArchived = () => { },
-    handleSearch = () => { },
     isLoading = false,
 }: {
+    handleSearch?: (keyword?: string, showArchived?: boolean) => void
     showArchived?: boolean
     setShowArchived?: (archived: boolean) => void
-    handleSearch?: (keyword?: string, showArchived?: boolean) => void
     isLoading?: boolean
 }) => {
+    const { showTrashed } = useNotes();
     const [searchKeyword, setSearchKeyword] = useState("");
 
     useEffect(() => {
@@ -28,8 +30,10 @@ const NotesToolBar = ({
         <div className="absolute left-0 top-0 w-full z-50">
             <BackgroundGradient deg={180} start={50}>
                 <Group justify="center" gap={"sm"} p={"sm"} wrap="nowrap">
-
-                    <ToggleArchivedFilter showArchived={showArchived} setShowArchived={setShowArchived} />
+                    <FoldersAndMore
+                        showArchived={showArchived}
+                        setShowArchived={setShowArchived}
+                    />
                     <TextInput
                         className="grow"
                         rightSectionPointerEvents="none"
@@ -42,11 +46,16 @@ const NotesToolBar = ({
                     />
                     <NotesTopMenu />
                 </Group>
-                {showArchived &&
-                    <div className="relative">
-                        <Badge variant="default" size="xs" className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full ">Your Archive</Badge>
+                <div className="relative">
+                    <div className="absolute top-0 left-0 w-full -translate-y-1/2 flex flex-col items-center gap-1">
+                        {showArchived &&
+                            <Badge variant="default" size="xs">Your Archive</Badge>
+                        }
+                        {showTrashed &&
+                            <Badge variant="default" size="xs">Your Trash</Badge>
+                        }
                     </div>
-                }
+                </div>
             </BackgroundGradient>
         </div>
     )

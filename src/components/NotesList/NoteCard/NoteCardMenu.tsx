@@ -11,7 +11,8 @@ import {
     IconArchiveOff,
     IconPinned,
     IconPinnedFilled,
-    IconRestore
+    IconRestore,
+    IconBomb
 } from '@tabler/icons-react';
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ const NoteCardMenu = ({
 }: {
     note: Note,
 }) => {
-    const { toggleTrashNote, toggleArchiveNote, togglePinnedNote } = useNotes();
+    const { showTrashed, toggleTrashNote, deleteNote, toggleArchiveNote, togglePinnedNote } = useNotes();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const noteSettingsRef = useRef<NoteSettingsRef>(null);
@@ -41,6 +42,12 @@ const NoteCardMenu = ({
     const handleTogglePinnedNote = async () => {
         setLoading(true);
         await togglePinnedNote(note);
+        setLoading(false);
+    }
+
+    const handleDeletePermanently = async () => {
+        setLoading(true);
+        await deleteNote(note.id);
         setLoading(false);
     }
 
@@ -99,6 +106,15 @@ const NoteCardMenu = ({
                     >
                         {note.trashed ? "Restore" : "Trash"}
                     </Menu.Item>
+                    {showTrashed &&
+                        <Menu.Item
+                            color={"red"}
+                            onClick={handleDeletePermanently}
+                            leftSection={<IconBomb size={14} />}
+                        >
+                            Delete Permanently
+                        </Menu.Item>
+                    }
                 </Menu.Dropdown>
             </Menu>
         </>

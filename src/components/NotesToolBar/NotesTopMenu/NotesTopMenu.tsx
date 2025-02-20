@@ -3,7 +3,6 @@ import { Menu, ActionIcon, Avatar } from "@mantine/core";
 import { IconInfoCircle, IconSettings, IconUser } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
-
 const NotesTopMenu = () => {
     const navigate = useNavigate();
     const { user, isLoading: userLoading } = useAuth();
@@ -19,7 +18,6 @@ const NotesTopMenu = () => {
     };
 
     return (
-
         <Menu shadow="md" width={200} withArrow position="bottom-end">
             <Menu.Target>
                 <ActionIcon
