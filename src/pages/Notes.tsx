@@ -13,8 +13,6 @@ const Notes = () => {
     const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
     const [showArchived, setShowArchived] = useState(false);
 
-
-
     const handleSearch = (keyword: string = "") => {
         const newNotes = filterNotes(keyword, showArchived);
         setFilteredNotes(newNotes);
