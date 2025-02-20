@@ -25,6 +25,7 @@ export interface NotesContextType {
     showTrashed: boolean;
     setShowTrashed: (trashed: boolean) => void;
     deleteNote: (id: number) => Promise<void>;
+    fetchNotes: () => Promise<void>;
     isLoading: boolean;
     getNote: (id: number) => Promise<Note | null>;
 }

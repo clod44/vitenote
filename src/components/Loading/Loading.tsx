@@ -3,7 +3,7 @@ import { Flex, Loader, Text } from "@mantine/core"
 
 
 const Loading = ({
-    label
+    label,
 }: {
     label?: string
 }) => {

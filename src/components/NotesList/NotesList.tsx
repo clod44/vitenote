@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import Loading from "../Loading";
+import Loading from "@/components/Loading";
 import { IconCookieMan, IconSparkles } from "@tabler/icons-react";
 import { ScrollArea, Space, Stack, Text } from "@mantine/core";
 import NoteCard from "./NoteCard";

@@ -252,6 +252,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             showTrashed,
             setShowTrashed,
             deleteNote,
+            fetchNotes,
             isLoading,
             getNote
         }}>
