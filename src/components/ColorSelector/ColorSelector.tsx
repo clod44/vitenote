@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { Combobox, useCombobox, DEFAULT_THEME, ThemeIcon, ScrollArea, ActionIcon, ActionIconProps } from '@mantine/core';
 
-const colors = Object.keys(DEFAULT_THEME.colors);
+export const colors = Object.keys(DEFAULT_THEME.colors);
 
 export interface ColorSelectorRef {
     setValue: (color: string) => void
