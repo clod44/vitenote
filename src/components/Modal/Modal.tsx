@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { Modal as MantineModal, Group, Stack, Text, Paper, CloseButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconSettings } from "@tabler/icons-react";
@@ -6,21 +6,31 @@ import { IconSettings } from "@tabler/icons-react";
 export interface ModalRef {
     open: () => void,
     close: () => void,
-    opened: boolean
+    opened: boolean,
 }
 
-const Modal = forwardRef(({ title = "Options", icon = <IconSettings size={16} />, children }: {
+const Modal = forwardRef(({
+    title = "Options",
+    icon = <IconSettings size={16} />,
+    children,
+    onOpenChange
+}: {
     title?: string,
     icon?: React.ReactNode,
     children?: React.ReactNode
+    onOpenChange?: (opened: boolean) => void
 }, ref) => {
     const [modalOpened, { open: modalOpen, close: modalClose }] = useDisclosure(false);
 
     useImperativeHandle(ref, () => ({
         open: modalOpen,
         close: modalClose,
-        opened: modalOpened
+        opened: modalOpened,
     }));
+
+    useEffect(() => {
+        if (onOpenChange) onOpenChange(modalOpened);
+    }, [modalOpened]);
 
     return (
         <MantineModal
