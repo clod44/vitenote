@@ -2,11 +2,15 @@ import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 
 const BackgroundGradient = ({
     invertedColorScheme = false,
+    darkShade = 7,
+    lightShade = 0,
     deg = 0,
     start = 0,
-    children
+    children,
 }: {
     invertedColorScheme?: boolean;
+    darkShade?: number;
+    lightShade?: number;
     deg?: number;
     start?: number;
     children?: React.ReactNode;
@@ -15,7 +19,7 @@ const BackgroundGradient = ({
     const theme = useMantineTheme();
 
     const desiredColorScheme = invertedColorScheme ? (colorScheme === "dark" ? "light" : "dark") : colorScheme;
-    const bgColor = desiredColorScheme === "dark" ? theme.colors.dark[7] : theme.colors.gray[0];
+    const bgColor = desiredColorScheme === "dark" ? theme.colors.dark[darkShade] : theme.colors.gray[lightShade];
 
     return (
         <div
