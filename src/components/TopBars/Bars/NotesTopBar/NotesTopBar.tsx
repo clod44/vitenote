@@ -1,10 +1,11 @@
-import { Badge, Group, TextInput } from "@mantine/core"
+import { Badge, CloseButton, Group, Stack, TextInput } from "@mantine/core"
 import { IconSearch } from "@tabler/icons-react"
 import NotesTopMenu from "./NotesTopMenu"
 import { useEffect, useState } from "react"
 import BackgroundGradient from "@/components/BackgroundGradient/"
 import FoldersAndMore from "./FoldersAndMore"
 import { useNotes } from "@/hooks/useNotes"
+import { useFolders } from "@/hooks/useFolders"
 
 const NotesTopBar = ({
     handleSearch = () => { },
@@ -19,6 +20,7 @@ const NotesTopBar = ({
 }) => {
     const { showTrashed } = useNotes();
     const [searchKeyword, setSearchKeyword] = useState("");
+    const { selectedFolder, selectFolder } = useFolders();
 
     useEffect(() => {
         handleSearch(searchKeyword, showArchived);
@@ -47,13 +49,27 @@ const NotesTopBar = ({
                     <NotesTopMenu />
                 </Group>
                 <div className="relative">
-                    <div className="absolute top-0 left-0 w-full -translate-y-1/2 flex flex-col items-center gap-1">
-                        {showArchived &&
-                            <Badge variant="default" size="xs">Your Archive</Badge>
-                        }
-                        {showTrashed &&
-                            <Badge variant="default" size="xs">Your Trash</Badge>
-                        }
+                    <div className="absolute top-0 left-0 w-full -translate-y-1/2">
+                        <Stack
+                            justify="center"
+                            align="center"
+                        >
+                            {selectedFolder &&
+                                <Badge
+                                    c={selectedFolder.color}
+                                    rightSection={<CloseButton variant="subtle" size="xs" onClick={() => selectFolder(-1)} />}
+                                    variant="default"
+                                    size="xs">
+                                    {selectedFolder.title}
+                                </Badge>
+                            }
+                            {showArchived &&
+                                <Badge variant="default" size="xs">Your Archive</Badge>
+                            }
+                            {showTrashed &&
+                                <Badge variant="default" size="xs">Your Trash</Badge>
+                            }
+                        </Stack>
                     </div>
                 </div>
             </BackgroundGradient>
