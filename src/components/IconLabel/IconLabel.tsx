@@ -1,15 +1,15 @@
-import { Stack, Text } from "@mantine/core"
+import { Stack, Text, StackProps } from "@mantine/core"
 import { IconSkull } from "@tabler/icons-react"
-
 const IconLabel = ({
     label = null,
-    icon = <IconSkull className="animate-shake" />
+    icon = <IconSkull className="animate-shake" />,
+    ...props
 }: {
     label?: string | null,
-    icon?: React.ReactNode
-}) => {
+    icon?: React.ReactNode,
+} & StackProps) => {
     return (
-        <Stack w={"100%"} align="center" gap={"md"}>
+        <Stack w={"100%"} h={"100%"} align="center" justify="center" gap={"xs"} {...props}>
             {icon && icon}
             {label &&
                 <Text c={"dimmed"} size="xs">{label}</Text>
