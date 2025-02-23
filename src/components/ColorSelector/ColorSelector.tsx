@@ -1,15 +1,20 @@
-import { useState } from 'react';
-import { Combobox, useCombobox, DEFAULT_THEME, ThemeIcon, ScrollArea, ActionIcon } from '@mantine/core';
+import { forwardRef, useImperativeHandle, useState } from 'react';
+import { Combobox, useCombobox, DEFAULT_THEME, ThemeIcon, ScrollArea, ActionIcon, ActionIconProps } from '@mantine/core';
 
 const colors = Object.keys(DEFAULT_THEME.colors);
 
-const ColorSelector = ({
+export interface ColorSelectorRef {
+    setValue: (color: string) => void
+    value: () => string
+}
+
+const ColorSelector = forwardRef(({
     onChange = () => { },
     defaultValue = "gray"
 }: {
     onChange?: (color: string) => void
     defaultValue?: string
-}) => {
+} & ActionIconProps, ref) => {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -21,6 +26,18 @@ const ColorSelector = ({
             <ThemeIcon size="xs" radius="xl" color={color} />
         </Combobox.Option>
     ));
+
+    useImperativeHandle(ref, () => ({
+        setValue: (color: string) => {
+            if (colors.includes(color)) {
+                setValue(color);
+            } else {
+                setValue("gray");
+                console.warn(`Color ${color} not found. Using default instead`);
+            }
+        },
+        value: () => value
+    }));
 
     return (
         <Combobox
@@ -46,6 +63,6 @@ const ColorSelector = ({
             </Combobox.Dropdown>
         </Combobox>
     );
-}
+})
 
 export default ColorSelector
