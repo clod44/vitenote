@@ -1,5 +1,5 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import { About, Notes, Note, Profile, NotFound, Settings } from "./pages/index.tsx";
+import { About, Notes, Note, Profile, NotFound, Settings, Folders } from "./pages/index.tsx";
 import { Stack } from "@mantine/core";
 
 import Test1 from "./pages/TransitionTest/Test1.tsx";
@@ -19,6 +19,7 @@ const router = createBrowserRouter([
         children: [
             { index: true, path: "/", element: <Notes /> },
             { path: "/note/:id?", element: <Note /> },
+            { path: "/folders", element: <Folders /> },
             { path: "/profile", element: <Profile /> },
             { path: "/settings", element: <Settings /> },
             { path: "/about", element: <About /> },
