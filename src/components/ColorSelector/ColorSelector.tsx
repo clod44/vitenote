@@ -10,7 +10,8 @@ export interface ColorSelectorRef {
 
 const ColorSelector = forwardRef(({
     onChange = () => { },
-    defaultValue = "gray"
+    defaultValue = "gray",
+    ...props
 }: {
     onChange?: (color: string) => void
     defaultValue?: string
@@ -51,7 +52,7 @@ const ColorSelector = forwardRef(({
             withArrow
         >
             <Combobox.Target>
-                <ActionIcon variant="default" onClick={() => combobox.toggleDropdown()}>
+                <ActionIcon variant="default" onClick={() => combobox.toggleDropdown()} {...props}>
                     <ThemeIcon size="xs" radius="xl" color={value} />
                 </ActionIcon>
             </Combobox.Target>
