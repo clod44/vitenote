@@ -3,6 +3,7 @@ import supabase from '@/utils/supabase';
 import { NotesContext, NotesContextType, Note } from './NotesContext';
 import { RealtimePostgresChangesPayload, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { useAuth } from '@/hooks/useAuth';
+//import { useFolders } from '@/hooks/useFolders';
 //TODO:cast proper types to stuff
 
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -10,6 +11,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showTrashed, setShowTrashed] = useState<boolean>(false);
+    //const { selectedFolder } = useFolders();
+    //TODO:fetch notes based on selectedfolder
 
     const fetchNotes = async () => {
         setIsLoading(true);
@@ -95,8 +98,9 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             //.filter((note) => note.trashed === showTrashed) 
         );
     };
-
+    //TODO: applyServerChangesDelete uses RealtimePostgresChangesPayload<Note> instead of RealtimePostgresDeletePayload<Note>.
     const applyServerChangesDelete = (payload: RealtimePostgresChangesPayload<Note>) => {
+        //TODO: this whole casting trail might not be necessary anymore.
         const { old: oldNote } = payload as unknown as { old: { id: number } | null };
         setNotes((prevNotes) => prevNotes.filter((note) => note.id !== oldNote?.id));
     };
