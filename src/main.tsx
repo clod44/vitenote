@@ -7,6 +7,7 @@ import '@mantine/tiptap/styles.css';
 import { MantineProvider, createTheme } from '@mantine/core'
 import { AuthProvider } from './context/auth/';
 import { NotesProvider } from './context/notes/';
+import { FoldersProvider } from './context/folders/';
 const theme = createTheme({
     primaryColor: 'yellow',
 })
@@ -19,9 +20,11 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <MantineProvider defaultColorScheme="dark" theme={theme}>
             <AuthProvider>
-                <NotesProvider>
-                    <App />
-                </NotesProvider>
+                <FoldersProvider>
+                    <NotesProvider>
+                        <App />
+                    </NotesProvider>
+                </FoldersProvider>
             </AuthProvider>
         </MantineProvider>
     </StrictMode >,
