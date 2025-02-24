@@ -6,10 +6,12 @@ import { Note } from "@/context/notes";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotes } from "@/hooks/useNotes";
 import { useEffect, useState } from "react";
+import { useFolders } from "@/hooks/useFolders";
 
 const Notes = () => {
     const { user, isLoading: userLoading } = useAuth();
     const { notes, isLoading: notesLoading, showTrashed, fetchNotes, filterNotes } = useNotes();
+    const { selectedFolder } = useFolders();
     const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
     const [showArchived, setShowArchived] = useState(false);
 
@@ -22,7 +24,7 @@ const Notes = () => {
         if (userLoading || notesLoading) return;
         handleSearch();
         /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    }, [notesLoading, notes, userLoading, user]);
+    }, [notesLoading, notes, userLoading, user, selectedFolder]);
 
     return (
         <>

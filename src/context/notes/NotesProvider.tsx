@@ -3,7 +3,7 @@ import supabase from '@/utils/supabase';
 import { NotesContext, NotesContextType, Note } from './NotesContext';
 import { RealtimePostgresChangesPayload, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { useAuth } from '@/hooks/useAuth';
-//import { useFolders } from '@/hooks/useFolders';
+import { useFolders } from '@/hooks/useFolders';
 //TODO:cast proper types to stuff
 
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -11,8 +11,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showTrashed, setShowTrashed] = useState<boolean>(false);
-    //const { selectedFolder } = useFolders();
-    //TODO:fetch notes based on selectedfolder
+    const { selectedFolder } = useFolders();
 
     const fetchNotes = async () => {
         setIsLoading(true);
@@ -270,6 +269,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             filteredByArchived.filter(note =>
                 note.title.toLowerCase().includes(keyword.toLowerCase())
             );
+
+        if (selectedFolder) return filteredByKeyword.filter(note => note.folder_id === selectedFolder.id);
         return filteredByKeyword || [];
     };
 

@@ -13,6 +13,7 @@ export interface Note {
     created_at: string;
     trashed: boolean;
     trashed_at: string | null;
+    folder_id: number | null;
 }
 
 export interface NotesContextType {
