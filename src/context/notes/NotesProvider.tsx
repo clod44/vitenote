@@ -186,6 +186,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             if (typeof updateData.title === 'string' && updateData.title.trim().length === 0) {
                 updateData.title = "Untitled";
             }
+            if (updateData.folder_id === -1) updateData.folder_id = null;
 
             const { error } = await supabase
                 .from('notes')
