@@ -1,15 +1,17 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { About, Notes, Note, Profile, NotFound, Settings, Folders } from "./pages/index.tsx";
-import { Stack } from "@mantine/core";
+import { Container, Stack } from "@mantine/core";
 
 import Test1 from "./pages/TransitionTest/Test1.tsx";
 import Test2 from "./pages/TransitionTest/Test2.tsx";
 
 const Layout = () => (
     <div className="fixed left-0 top-0 w-full h-full content">
-        <Stack w="100%" h="100%" align="stretch" justify="center" gap="sm">
-            <Outlet />
-        </Stack>
+        <Container p={0} size={"md"} h={"100%"}>
+            <Stack w="100%" h="100%" align="stretch" justify="center" gap="sm">
+                <Outlet />
+            </Stack>
+        </Container>
     </div>
 );
 
