@@ -5,7 +5,7 @@ import { IconPlus, IconSpy, IconUser, IconWorldBolt } from "@tabler/icons-react"
 import { useAuth } from "@/hooks/useAuth";
 
 const Login = () => {
-    const { signInWithEmail, signUpWithEmail, signInAnonymously } = useAuth();
+    const { signIn, signUp } = useAuth();
     const loginForm = useForm({
         mode: 'uncontrolled',
         initialValues: { email: '', password: '' },
@@ -29,15 +29,15 @@ const Login = () => {
 
     //signin functions trigger a loading state which hides this page. no need to handle loading state here.
     const handleLoginFormSubmit = (values: typeof loginForm.values) => {
-        signInWithEmail(values.email, values.password);
+        signIn({ method: "email", email: values.email, password: values.password });
     }
 
     const handleRegisterFormSubmit = (values: typeof registerForm.values) => {
-        signUpWithEmail(values.email, values.password);
+        signUp({ method: "email", email: values.email, password: values.password });
     }
 
     const handleSignInAnonymously = () => {
-        signInAnonymously();
+        signIn({ method: "anonymous" });
     }
 
     const handleTabChange = () => {

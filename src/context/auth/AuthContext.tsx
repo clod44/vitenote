@@ -1,13 +1,34 @@
-import { Provider } from "@supabase/supabase-js";
+import { AuthUser, Provider } from "@supabase/supabase-js";
 import { createContext } from "react";
 
+//SIGNIN
+export interface SignInMethodEmail {
+    method: "email";
+    email: string;
+    password: string;
+}
+export interface SignInMethodAnonymous {
+    method: "anonymous";
+}
+export interface SignInMethodOAuth {
+    method: "oauth";
+    provider: Provider;
+}
+export type SignInMethod = SignInMethodEmail | SignInMethodAnonymous | SignInMethodOAuth;
+
+//SIGN UP
+export interface SignUpMethodEmail {
+    method: "email";
+    email: string;
+    password: string;
+}
+export type SignUpMethod = SignUpMethodEmail;
+
+
 export interface AuthContextType {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    user: any;
-    signUpWithEmail: (email: string, password: string) => Promise<void>;
-    signInWithEmail: (email: string, password: string) => Promise<void>;
-    signInWithOAuth: (provider?: Provider) => Promise<void>;
-    signInAnonymously: () => Promise<void>;
+    user: AuthUser | null;
+    signUp: (args: SignUpMethod) => Promise<void>;
+    signIn: (args: SignInMethod) => Promise<void>;
     signOut: () => Promise<void>;
     isLoading: boolean;
 }

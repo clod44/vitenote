@@ -1,43 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import supabase from '@/utils/supabase';
-import { AuthContextType, AuthContext } from './AuthContext';
+import { AuthContextType, AuthContext, SignInMethod, SignInMethodEmail, SignInMethodOAuth, SignInMethodAnonymous, SignUpMethod, SignUpMethodEmail } from '@/context/auth/AuthContext';
 import Loading from '@/components/Loading';
-import { Provider } from '@supabase/supabase-js';
-//TODO:cast proper types to stuff
+import { AuthUser } from '@supabase/supabase-js';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<AuthUser | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
     useEffect(() => {
         const getUser = async () => {
             setIsLoading(true);
-            const { data: { user }, error } = await supabase.auth.getUser();
+            const { data: { user: _user }, error } = await supabase.auth.getUser();
             if (error) {
                 console.error('Error fetching user:', error.message);
                 setUser(null);
             } else {
-                setUser(user || null);
+                setUser(_user || null);
             }
             setIsLoading(false);
         };
-
         getUser();
-
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user || null);
         });
-
         return () => {
             listener.subscription.unsubscribe();
         };
     }, []);
 
-    const signUpWithEmail: AuthContextType['signUpWithEmail'] = async (email, password) => {
+    const signUp: AuthContextType['signUp'] = async (args) => {
+        const signUpMethod = async (method: SignUpMethod["method"]) => {
+            switch (method) {
+                case "email": {
+                    const emailArgs = args as SignUpMethodEmail;
+                    return await supabase.auth.signUp({ email: emailArgs.email, password: emailArgs.password });
+                }
+                default:
+                    throw new Error(`Unsupported method: ${method}`);
+            }
+        };
         try {
             setIsLoading(true);
-            const { error } = await supabase.auth.signUp({ email, password });
+            const { error } = await signUpMethod(args.method);
             if (error) throw error;
         } catch (error) {
             console.error('Error signing up:', error);
@@ -45,36 +49,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const signInWithEmail: AuthContextType['signInWithEmail'] = async (email, password) => {
-        try {
-            setIsLoading(true);
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-        } catch (error) {
-            console.error('Error logging in:', error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    const signInAnonymously: AuthContextType['signInAnonymously'] = async () => {
-        try {
-            setIsLoading(true);
-            const { error } = await supabase.auth.signInAnonymously();
-            if (error) throw error;
-        } catch (error) {
-            console.error('Error logging in:', error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
     }
-    const signInWithOAuth: AuthContextType['signInWithOAuth'] = async (provider: Provider = 'google') => {
+
+    const signIn: AuthContextType['signIn'] = async (args) => {
+        const signInMethod = async (method: SignInMethod["method"]) => {
+            switch (method) {
+                case "email": {
+                    const emailArgs = args as SignInMethodEmail;
+                    return await supabase.auth.signInWithPassword({ email: emailArgs.email, password: emailArgs.password });
+                }
+                case "anonymous": {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const anonymousArgs = args as SignInMethodAnonymous;
+                    return await supabase.auth.signInAnonymously();
+                }
+                case "oauth": {
+                    const oauthArgs = args as SignInMethodOAuth;
+                    return await supabase.auth.signInWithOAuth({ provider: oauthArgs.provider });
+                }
+                default:
+                    throw new Error(`Unsupported method: ${method}`);
+            }
+        };
         try {
             setIsLoading(true);
-            const { error } = await supabase.auth.signInWithOAuth({ provider });
+            const { error } = await signInMethod(args.method);
             if (error) throw error;
         } catch (error) {
             console.error('Error logging in:', error);
@@ -99,10 +98,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return (
         <AuthContext.Provider value={{
             user,
-            signUpWithEmail,
-            signInWithEmail,
-            signInWithOAuth,
-            signInAnonymously,
+            signIn,
+            signUp,
             signOut,
             isLoading
         }}>
