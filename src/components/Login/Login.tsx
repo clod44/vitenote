@@ -45,11 +45,9 @@ const Login = () => {
         registerForm.clearErrors();
     }
 
-
     return (
         <>
             <GenericTopBar title="Login" />
-
             <Stack
                 w={"100%"}
                 h={"100%"}
@@ -143,7 +141,6 @@ const Login = () => {
                             </Stack>
                         </form>
                     </Tabs.Panel>
-
                 </Container>
             </Tabs>
             <Group
