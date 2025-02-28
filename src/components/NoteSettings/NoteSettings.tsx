@@ -2,7 +2,7 @@ import { Note } from "@/context/notes";
 import Modal, { ModalRef } from "@/components/Modal";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { IconCheck, IconCopy, IconLoader, IconLock, IconSettings, IconWorld } from "@tabler/icons-react";
-import { ActionIcon, CheckIcon, Combobox, CopyButton, Group, Input, InputBase, NativeSelect, ScrollArea, SimpleGrid, Switch, Text, TextInput, ThemeIcon, Tooltip, useCombobox } from "@mantine/core";
+import { ActionIcon, CheckIcon, Combobox, CopyButton, Group, InputBase, ScrollArea, SimpleGrid, Switch, Text, TextInput, ThemeIcon, Tooltip, useCombobox } from "@mantine/core";
 import Loading from "@/components/Loading";
 import { useNotes } from "@/hooks/useNotes";
 import ColorSelector from "@/components/ColorSelector";
