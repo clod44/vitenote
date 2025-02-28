@@ -1,6 +1,6 @@
 import { useForm } from "@mantine/form";
 import { GenericTopBar } from "@/components/TopBars"
-import { ActionIcon, Button, Checkbox, Group, PasswordInput, Stack, Tabs, TextInput, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Button, Checkbox, Container, Group, PasswordInput, Stack, Tabs, TextInput, Title, Tooltip } from "@mantine/core";
 import { IconPlus, IconSpy, IconUser, IconWorldBolt } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -76,72 +76,75 @@ const Login = () => {
                     </Tabs.Tab>
                 </Tabs.List>
 
-                <Tabs.Panel value="login">
-                    <form onSubmit={loginForm.onSubmit(handleLoginFormSubmit)}>
-                        <Stack
-                            w={"100%"}
-                            align="stretch"
-                            justify="center"
-                            gap={"sm"}
-                            p={"sm"}
-                        >
-                            <TextInput
-                                label="Email"
-                                placeholder="example@gmail.com"
-                                key={loginForm.key('email')}
-                                {...loginForm.getInputProps('email')}
-                            />
-                            <PasswordInput
-                                label="Password"
-                                placeholder="***"
-                                key={loginForm.key('password')}
-                                {...loginForm.getInputProps('password')}
-                            />
-                            <Button type="submit" mt={"md"}>
-                                Continue
-                            </Button>
-                        </Stack>
-                    </form>
-                </Tabs.Panel>
+                <Container p={0} size={"xs"}>
+                    <Tabs.Panel value="login">
+                        <form onSubmit={loginForm.onSubmit(handleLoginFormSubmit)}>
+                            <Stack
+                                w={"100%"}
+                                align="stretch"
+                                justify="center"
+                                gap={"sm"}
+                                p={"sm"}
+                            >
+                                <TextInput
+                                    label="Email"
+                                    placeholder="example@gmail.com"
+                                    key={loginForm.key('email')}
+                                    {...loginForm.getInputProps('email')}
+                                />
+                                <PasswordInput
+                                    label="Password"
+                                    placeholder="***"
+                                    key={loginForm.key('password')}
+                                    {...loginForm.getInputProps('password')}
+                                />
+                                <Button type="submit" mt={"md"}>
+                                    Continue
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Tabs.Panel>
 
-                <Tabs.Panel value="register">
-                    <form onSubmit={registerForm.onSubmit(handleRegisterFormSubmit)}>
-                        <Stack
-                            w={"100%"}
-                            align="stretch"
-                            justify="center"
-                            gap={"sm"}
-                            p={"sm"}
-                        >
-                            <TextInput
-                                label="Email"
-                                placeholder="example@gmail.com"
-                                key={registerForm.key('email')}
-                                {...registerForm.getInputProps('email')}
-                            />
-                            <PasswordInput
-                                label="Password"
-                                placeholder="***"
-                                key={registerForm.key('password')}
-                                {...registerForm.getInputProps('password')}
-                            />
-                            <PasswordInput
-                                label="Password Confirm"
-                                placeholder="***"
-                                key={registerForm.key('passwordConfirm')}
-                                {...registerForm.getInputProps('passwordConfirm')}
-                            />
-                            <Checkbox
-                                label="I accept terms and conditions"
-                                key={registerForm.key('terms')}
-                                {...registerForm.getInputProps('terms')}
-                            />
-                            <Button type="submit" mt={"md"}>
-                                Continue
-                            </Button>
-                        </Stack>
-                    </form>
-                </Tabs.Panel>
+                    <Tabs.Panel value="register">
+                        <form onSubmit={registerForm.onSubmit(handleRegisterFormSubmit)}>
+                            <Stack
+                                w={"100%"}
+                                align="stretch"
+                                justify="center"
+                                gap={"sm"}
+                                p={"sm"}
+                            >
+                                <TextInput
+                                    label="Email"
+                                    placeholder="example@gmail.com"
+                                    key={registerForm.key('email')}
+                                    {...registerForm.getInputProps('email')}
+                                />
+                                <PasswordInput
+                                    label="Password"
+                                    placeholder="***"
+                                    key={registerForm.key('password')}
+                                    {...registerForm.getInputProps('password')}
+                                />
+                                <PasswordInput
+                                    label="Password Confirm"
+                                    placeholder="***"
+                                    key={registerForm.key('passwordConfirm')}
+                                    {...registerForm.getInputProps('passwordConfirm')}
+                                />
+                                <Checkbox
+                                    label="I accept terms and conditions"
+                                    key={registerForm.key('terms')}
+                                    {...registerForm.getInputProps('terms')}
+                                />
+                                <Button type="submit" mt={"md"}>
+                                    Continue
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Tabs.Panel>
+
+                </Container>
             </Tabs>
             <Group
                 w={"100%"}
