@@ -144,6 +144,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }
 
+    /**
+     * Creates a new note. associates the folder if selected.
+     * @returns The id of the newly created note
+     * @throws An error if the user is not logged in or if the note could not be created
+     */
     const createNote: NotesContextType['createNote'] = async () => {
         try {
             if (!user) throw new Error('User not logged in');
@@ -157,6 +162,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 calling function, and the client won't immediately know which note just got created.
                 */
                 user_id: user.id,
+                folder_id: selectedFolder?.id || null
             }).select('id');
             console.log(data);
             if (error) throw error;
