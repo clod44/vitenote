@@ -1,6 +1,8 @@
 import { createContext } from "react";
 
+//TODO: expand on using types instead of interfaces in Contexes
 export interface Note {
+    __type__: 'note';
     id: number;
     user_id: string;
     title: string;
@@ -16,6 +18,13 @@ export interface Note {
     folder_id: number | null;
 }
 
+export interface FollowedNote {
+    __type__: 'followedNote';
+    id: number;
+    user_id: string;
+    note_id: number;
+    created_at: string;
+}
 export interface NotesContextType {
     notes: Note[];
     createNote: () => Promise<string | null>;
@@ -28,6 +37,10 @@ export interface NotesContextType {
     deleteNote: (id: number) => Promise<void>;
     fetchNotes: () => Promise<void>;
     filterNotes: (keyword?: string, archived?: boolean) => Note[];
+    showFollowed: boolean;
+    toggleFollowNote: (id: number) => Promise<void>;
+    setShowFollowed: (followed: boolean) => void;
+    isFollowingNote: (id: number) => Promise<boolean>;
     isLoading: boolean;
     getNote: (id: number) => Promise<Note | null>;
 }

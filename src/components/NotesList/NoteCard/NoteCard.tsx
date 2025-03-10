@@ -38,7 +38,7 @@ const NoteCard = ({
                 </div>
                 <Group wrap="nowrap" p={"md"} className="grow w-10">
                     <Title order={4} lineClamp={1} className="grow">
-                        {note.title.trim().length > 0 ?
+                        {note.title?.trim().length > 0 ?
                             note.title :
                             "Untitled"
                         }

@@ -1,5 +1,6 @@
 import NoteSettings, { NoteSettingsRef } from "@/components/NoteSettings";
 import { Note } from "@/context/notes";
+import { useAuth } from "@/hooks/useAuth";
 import { useNotes } from "@/hooks/useNotes";
 import { ActionIcon, Menu, Text } from "@mantine/core";
 import {
@@ -12,9 +13,11 @@ import {
     IconPinned,
     IconPinnedFilled,
     IconRestore,
-    IconBomb
+    IconBomb,
+    IconFlareFilled,
+    IconFlare
 } from '@tabler/icons-react';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const NoteCardMenu = ({
@@ -22,10 +25,29 @@ const NoteCardMenu = ({
 }: {
     note: Note,
 }) => {
-    const { showTrashed, toggleTrashNote, deleteNote, toggleArchiveNote, togglePinnedNote } = useNotes();
+    const { showTrashed,
+        toggleTrashNote,
+        deleteNote,
+        toggleArchiveNote,
+        togglePinnedNote,
+        isFollowingNote,
+        toggleFollowNote
+    } = useNotes();
+    const { user } = useAuth();
+    const isOwnerOfNoteRef = useRef<boolean>(note.user_id === user?.id);
+    const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const noteSettingsRef = useRef<NoteSettingsRef>(null);
+
+    useEffect(() => {
+        if (!note) return;
+        const checkIsFollowing = async () => {
+            const _isFollowing = await isFollowingNote(note.id);
+            setIsFollowing(_isFollowing);
+        }
+        checkIsFollowing();
+    }, [toggleFollowNote, note])
 
     const handleToggleTrashNote = async () => {
         setLoading(true);
@@ -48,6 +70,13 @@ const NoteCardMenu = ({
     const handleDeletePermanently = async () => {
         setLoading(true);
         await deleteNote(note.id);
+        setLoading(false);
+    }
+
+    const handleToggleFollowNote = async () => {
+        setLoading(true);
+        setIsFollowing(!isFollowing);
+        await toggleFollowNote(note.id);
         setLoading(false);
     }
 
@@ -77,44 +106,64 @@ const NoteCardMenu = ({
                     >
                         Open
                     </Menu.Item>
+                    {isOwnerOfNoteRef.current ? (
+                        <>
+                            <Menu.Item
+                                leftSection={<IconPencil size={14} />}
+                                onClick={() => {
+                                    noteSettingsRef.current?.open();
+                                }}
+                            >
+                                Customize
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={note.pinned ? <IconPinnedFilled size={14} /> : <IconPinned size={14} />}
+                                onClick={handleTogglePinnedNote}
+                            >
+                                {note.pinned ? "Unpin" : "Pin"}
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={note.archived ? <IconArchiveOff size={14} /> : <IconArchive size={14} />}
+                                onClick={handleToggleArchiveNote}
+                            >
+                                {note.archived ? "Unarchive" : "Archive"}
+                            </Menu.Item>
+
+                            <Menu.Divider />
+                            <Menu.Item
+                                color={note.trashed ? "green" : "red"}
+                                onClick={handleToggleTrashNote}
+                                leftSection={note.trashed ? <IconRestore size={14} /> : <IconTrash size={14} />}
+                            >
+                                {note.trashed ? "Restore" : "Trash"}
+                            </Menu.Item>
+                            {showTrashed &&
+                                <Menu.Item
+                                    color={"red"}
+                                    onClick={handleDeletePermanently}
+                                    leftSection={<IconBomb size={14} />}
+                                >
+                                    Delete Permanently
+                                </Menu.Item>
+                            }
+                        </>
+                    ) : (
+                        <>
+                            <Menu.Item
+                                leftSection={isFollowing ? <IconFlareFilled size={14} /> : <IconFlare size={14} />}
+                                onClick={handleToggleFollowNote}
+                            >
+                                {isFollowing ? "Unfollow" : "Follow"}
+                            </Menu.Item>
+                        </>
+                    )}
                     <Menu.Item
-                        leftSection={<IconPencil size={14} />}
-                        onClick={() => {
-                            noteSettingsRef.current?.open();
-                        }}
+                        leftSection={isFollowing ? <IconFlareFilled size={14} /> : <IconFlare size={14} />}
+                        onClick={handleToggleFollowNote}
                     >
-                        Customize
-                    </Menu.Item>
-                    <Menu.Item
-                        leftSection={note.pinned ? <IconPinnedFilled size={14} /> : <IconPinned size={14} />}
-                        onClick={handleTogglePinnedNote}
-                    >
-                        {note.pinned ? "Unpin" : "Pin"}
-                    </Menu.Item>
-                    <Menu.Item
-                        leftSection={note.archived ? <IconArchiveOff size={14} /> : <IconArchive size={14} />}
-                        onClick={handleToggleArchiveNote}
-                    >
-                        {note.archived ? "Unarchive" : "Archive"}
+                        DEBUG {isFollowing ? "Unfollow" : "Follow"}
                     </Menu.Item>
 
-                    <Menu.Divider />
-                    <Menu.Item
-                        color={note.trashed ? "green" : "red"}
-                        onClick={handleToggleTrashNote}
-                        leftSection={note.trashed ? <IconRestore size={14} /> : <IconTrash size={14} />}
-                    >
-                        {note.trashed ? "Restore" : "Trash"}
-                    </Menu.Item>
-                    {showTrashed &&
-                        <Menu.Item
-                            color={"red"}
-                            onClick={handleDeletePermanently}
-                            leftSection={<IconBomb size={14} />}
-                        >
-                            Delete Permanently
-                        </Menu.Item>
-                    }
                 </Menu.Dropdown>
             </Menu>
         </>

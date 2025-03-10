@@ -10,7 +10,7 @@ import { useFolders } from "@/hooks/useFolders";
 
 const Notes = () => {
     const { user, isLoading: userLoading } = useAuth();
-    const { notes, isLoading: notesLoading, showTrashed, fetchNotes, filterNotes } = useNotes();
+    const { notes, isLoading: notesLoading, showTrashed, showFollowed, fetchNotes, filterNotes } = useNotes();
     const { selectedFolder } = useFolders();
     const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
     const [showArchived, setShowArchived] = useState(false);
@@ -35,7 +35,7 @@ const Notes = () => {
             />
             <PullToRefresh onRefresh={fetchNotes} />
             <NotesList notes={filteredNotes} notesLoading={notesLoading} />
-            {user && !userLoading && !notesLoading && !showArchived && !showTrashed && <CreateNoteFab />}
+            {user && !userLoading && !notesLoading && !showArchived && !showTrashed && !showFollowed && <CreateNoteFab />}
         </>
     )
 }

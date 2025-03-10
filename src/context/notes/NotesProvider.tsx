@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import supabase from '@/utils/supabase';
-import { NotesContext, NotesContextType, Note } from './NotesContext';
-import { RealtimePostgresChangesPayload, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
+import { NotesContext, NotesContextType, Note, FollowedNote } from './NotesContext';
+import { RealtimePostgresChangesPayload, RealtimePostgresDeletePayload, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { useAuth } from '@/hooks/useAuth';
 import { useFolders } from '@/hooks/useFolders';
 //TODO:cast proper types to stuff
@@ -9,73 +9,123 @@ import { useFolders } from '@/hooks/useFolders';
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [notes, setNotes] = useState<Note[]>([]);
+    const [followedNotes, setFollowedNotes] = useState<FollowedNote[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showTrashed, setShowTrashed] = useState<boolean>(false);
+    const [showFollowed, setShowFollowed] = useState<boolean>(false);
     const { selectedFolder } = useFolders();
-
+    useEffect(() => {
+        console.log("follwoedNotesChanged", followedNotes)
+    }, [followedNotes])
+    const fetchFollowedNotes = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('notes_follows')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            console.log("fetched followed notes", data);
+            setFollowedNotes(data);
+        } catch (error) {
+            console.error('Error fetching followed notes:', error);
+            setFollowedNotes([]);
+        }
+    }
     const fetchNotes = async () => {
         setIsLoading(true);
-        console.log("fetching all notes")
-        const { data, error } = await supabase.from('notes')
-            .select('*')
-            .eq('user_id', user?.id)
-            .eq('trashed', showTrashed)
-            //.order('pinned', { ascending: false }) //supabase does not support multiple orders this will be handled in client
-            .order('updated_at', { ascending: false });
-        if (error) {
-            console.error('Error fetching notes:', error.message);
-            setNotes([]);
-        } else {
+        console.log("fetching all notes");
+        const query = async () => {
+            if (showFollowed) {
+                const { data, error } = await supabase
+                    .from('notes_follows')
+                    .select('notes(*)')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                return data?.map(item => item.notes);
+            }
+            const { data, error } = await supabase
+                .from('notes')
+                .select('*')
+                .eq('user_id', user?.id)
+                .eq('trashed', showTrashed)
+                .order('updated_at', { ascending: false });
+            if (error) throw error;
+            return data;
+        };
+
+        try {
+            const data = await query();
+            if (showFollowed) console.log("WWWWWWWW", data);
             const sortedNotes = data?.sort((a, b) => {
                 if (a.pinned && !b.pinned) return -1;
                 if (!a.pinned && b.pinned) return 1;
                 return 0;
             });
             setNotes(sortedNotes || []);
+        } catch (error) {
+            console.error('Error fetching notes:', error);
+            setNotes([]);
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
 
+
+    const payloadCallback = useCallback((payload: RealtimePostgresChangesPayload<Note | FollowedNote>) => {
+        applyServerChanges(payload);
+    }, [followedNotes]);
     useEffect(() => {
-        //fetchNotes();
         const notesSubscription = supabase.channel('notes-all-changes')
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'notes', filter: `user_id=eq.${user?.id}` },
                 (payload: RealtimePostgresChangesPayload<Note>) => {
                     console.log('Change received!', payload)
-                    applyServerChanges(payload);
+                    payloadCallback(payload);
+                }
+            )
+            .subscribe()
+        const followedNotesSubscription = supabase.channel('followed-notes-all-changes')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'notes_follows', filter: `user_id=eq.${user?.id}` },
+                (payload: RealtimePostgresChangesPayload<Note>) => {
+                    console.log('Change received!', payload)
+                    payloadCallback(payload);
                 }
             )
             .subscribe()
 
         const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session?.user) fetchNotes();
+
         })
         return () => {
             supabase.removeChannel(notesSubscription);
+            supabase.removeChannel(followedNotesSubscription)
             authSubscription.unsubscribe()
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     useEffect(() => {
+        if (showFollowed) fetchFollowedNotes();
         fetchNotes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showTrashed]); //this will also run when mounted.
+    }, [showTrashed, showFollowed]); //this will also run when mounted.
 
 
-    const applyServerChanges = (payload: RealtimePostgresChangesPayload<Note>) => {
+    const applyServerChanges = (payload: RealtimePostgresChangesPayload<Note | FollowedNote>) => {
         const { eventType } = payload;
         switch (eventType) {
             case 'INSERT':
-                applyServerChangesInsert(payload as RealtimePostgresInsertPayload<Note>);
+                applyServerChangesInsert(payload as RealtimePostgresInsertPayload<Note | FollowedNote>);
                 break;
             case 'UPDATE':
-                applyServerChangesUpdate(payload as RealtimePostgresUpdatePayload<Note>);
+                applyServerChangesUpdate(payload as RealtimePostgresUpdatePayload<Note | FollowedNote>);
                 break;
             case 'DELETE':
-                applyServerChangesDelete(payload as RealtimePostgresChangesPayload<Note>);
+                applyServerChangesDelete(payload as RealtimePostgresDeletePayload<Note | FollowedNote>);
                 break;
             default:
                 console.error('Unknown payload event type:', eventType);
@@ -83,26 +133,78 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    const applyServerChangesInsert = (payload: RealtimePostgresInsertPayload<Note>) => {
-        const { new: newNote } = payload;
-        setNotes((prevNotes) => [newNote, ...prevNotes]);
+    const applyServerChangesInsert = (payload: RealtimePostgresInsertPayload<Note | FollowedNote>) => {
+        const { new: newData, table } = payload;
+        switch (table) {
+            case "notes": {
+                const newNote = newData as Note;
+                setNotes((prevNotes) => [...prevNotes, newNote]);
+                break;
+            }
+            case "notes_follows": {
+                const newFollowedNote = newData as FollowedNote;
+                setFollowedNotes((prevFollowedNotes) => [...prevFollowedNotes, newFollowedNote]);
+                break;
+            }
+            default:
+                break;
+        }
     };
 
-    const applyServerChangesUpdate = (payload: RealtimePostgresUpdatePayload<Note>) => {
-        const { new: newNote } = payload;
-        setNotes((prevNotes) =>
-            prevNotes
-                .map((note) => (note.id === newNote.id ? newNote : note))
-            //let ui handle immediate archive/trashed note disappearing. see SearchKeyword function in pages/Note.tsx
-            //.filter((note) => note.trashed === showTrashed) 
-        );
+    const applyServerChangesUpdate = (payload: RealtimePostgresUpdatePayload<Note | FollowedNote>) => {
+        const { new: newData, table } = payload;
+        switch (table) {
+            case "notes": {
+                const newNote = newData as Note;
+                setNotes((prevNotes) =>
+                    prevNotes
+                        .map((note) => (note.id === newNote.id ? newNote : note))
+                    //let ui handle immediate archive/trashed note disappearing. see function filterNotes
+                    //.filter((note) => note.trashed === showTrashed) 
+                );
+                break;
+            }
+            case "notes_follows": {
+                const newFollowedNote = newData as FollowedNote;
+                setFollowedNotes((prevFollowedNotes) =>
+                    prevFollowedNotes
+                        .map((followedNote) => (followedNote.id === newFollowedNote.id ? newFollowedNote : followedNote))
+                )
+                break;
+            }
+            default:
+                break;
+        }
     };
-    //TODO: applyServerChangesDelete uses RealtimePostgresChangesPayload<Note> instead of RealtimePostgresDeletePayload<Note>.
-    const applyServerChangesDelete = (payload: RealtimePostgresChangesPayload<Note>) => {
-        //TODO: this whole casting trail might not be necessary anymore.
-        const { old: oldNote } = payload as unknown as { old: { id: number } | null };
-        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== oldNote?.id));
+    const applyServerChangesDelete = (payload: RealtimePostgresDeletePayload<Note | FollowedNote>) => {
+        const { old: oldData, table } = payload;
+        switch (table) {
+            case "notes": {
+                setNotes((prevNotes) => prevNotes.filter((note) => note.id !== oldData?.id));
+                break;
+            }
+            case "notes_follows": {
+                console.log("1- followed note deleted", followedNotes, oldData);
+                if (showFollowed) {
+                    setFollowedNotes((prevFollowedNotes) => {
+                        console.log("Prev followedNotes:", prevFollowedNotes);
+                        const followedNote = prevFollowedNotes.find((f) => f.id === oldData?.id);
+                        if (!followedNote) return prevFollowedNotes;
+
+                        // Ensure setNotes uses a functional update
+                        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== followedNote.note_id));
+
+                        return prevFollowedNotes.filter((f) => f.id !== oldData?.id);
+                    });
+                }
+                console.log("2- followed note deleted", followedNotes, oldData);
+                break;
+            }
+            default:
+                break;
+        }
     };
+
 
     /**
      * Retrieves a note from the database by id
@@ -252,6 +354,66 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
 
+    const followNote = async (id: number) => {
+        if (!user) throw new Error('User not logged in');
+        try {
+            const { data, error } = await supabase.from('notes_follows').insert({
+                user_id: user.id,
+                note_id: id
+            });
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error following note:', error);
+            throw error;
+        }
+    }
+
+    const unfollowNote = async (id: number) => {
+        if (!user) throw new Error('User not logged in');
+        try {
+            const { data, error } = await supabase.from('notes_follows').delete().eq('user_id', user.id).eq('note_id', id);
+            if (error) throw error;
+            //realtime changes do not track note-follows
+            //setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+            return data;
+        } catch (error) {
+            console.error('Error unfollowing note:', error);
+            throw error;
+        }
+    }
+
+    const isFollowingNote: NotesContextType['isFollowingNote'] = async (id) => {
+        if (!user) throw new Error('User not logged in');
+        try {
+            const { data, error } = await supabase
+                .from('notes_follows')
+                .select('*')
+                .eq('user_id', user.id)
+                .eq('note_id', id);
+
+            if (error) throw error;
+            return data?.[0] || null;
+        } catch (error) {
+            console.error('Error checking if following:', error);
+            return false;
+        }
+    }
+
+    const toggleFollowNote: NotesContextType['toggleFollowNote'] = async (id) => {
+        if (!user) throw new Error('User not logged in');
+        try {
+            const isFollowing = await isFollowingNote(id);
+            if (isFollowing) {
+                await unfollowNote(id);
+            } else {
+                await followNote(id);
+            }
+        } catch (error) {
+            console.error('Error following operation on note:', error);
+            throw error;
+        }
+    };
 
     /**
      * Filters the notes based on the given keyword and archived state.
@@ -263,22 +425,20 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const filterNotes: NotesContextType['filterNotes'] = (keyword = "", archived = false) => {
         if (!notes) return [];
-        const filteredByTrashed = notes.filter(note => note.trashed === showTrashed);
-        //don't filter by "archived" if we are looking inside the trash bin
-        const filteredByArchived = showTrashed ?
-            filteredByTrashed :
-            filteredByTrashed.filter(note => {
-                return note.archived === archived;
-            });
-        //don't filter by keyword if no keyword is given
-        const filteredByKeyword = keyword.length === 0 ?
-            filteredByArchived :
-            filteredByArchived.filter(note =>
-                note.title.toLowerCase().includes(keyword.toLowerCase())
-            );
+        const filterByTrashed = (n: Note[]) => n.filter(note => note.trashed === showTrashed);
+        const filterByArchived = (n: Note[]) => n.filter(note => note.archived === archived);
+        const filterByKeyword = (n: Note[]) => n.filter(note => note.title.toLowerCase().includes(keyword.toLowerCase()));
+        const filterByFolder = (n: Note[]) => n.filter(note => note.folder_id === selectedFolder?.id);
 
-        if (selectedFolder) return filteredByKeyword.filter(note => note.folder_id === selectedFolder.id);
-        return filteredByKeyword || [];
+        let result = notes;
+        if (!showFollowed) {
+            result = filterByTrashed(result);
+            result = showTrashed ? result : filterByArchived(result);
+            result = !selectedFolder ? result : filterByFolder(result);
+        }
+        result = keyword.length === 0 ? result : filterByKeyword(result);
+        console.log(result)
+        return result || [];
     };
 
     return (
@@ -294,6 +454,10 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             deleteNote,
             fetchNotes,
             filterNotes,
+            showFollowed,
+            setShowFollowed,
+            toggleFollowNote,
+            isFollowingNote,
             isLoading,
             getNote
         }}>

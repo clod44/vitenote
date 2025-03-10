@@ -3,59 +3,73 @@ import IconLabel from "@/components/IconLabel";
 import { useFolders } from "@/hooks/useFolders";
 import { useNotes } from "@/hooks/useNotes";
 import { Menu, ActionIcon, Group, ScrollArea, Paper, Stack, Space, Text } from "@mantine/core";
-import { IconArchive, IconArchiveFilled, IconEdit, IconFile, IconFileFilled, IconFolder, IconFolderOpen, IconGhost2Filled, IconTrash, IconTrashFilled } from "@tabler/icons-react";
-import { useState } from "react";
+import { useCounter, useToggle } from "@mantine/hooks";
+import { IconArchive, IconArchiveFilled, IconEdit, IconFile, IconFileFilled, IconFlare, IconFlareFilled, IconFolder, IconFolderOpen, IconGhost2Filled, IconTrash, IconTrashFilled } from "@tabler/icons-react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const FoldersAndMore = ({
     showArchived = false,
     setShowArchived = () => { },
 }: {
-    showArchived?: boolean,
+    showArchived?: boolean
     setShowArchived?: (archived: boolean) => void
-    showTrashed?: boolean,
-    setShowTrashed?: (trashed: boolean) => void
 }) => {
-    const { showTrashed, setShowTrashed } = useNotes();
+    const { setShowTrashed, setShowFollowed } = useNotes();
     const navigate = useNavigate();
     const [menuOpened, setMenuOpened] = useState(false);
     const { folders, selectFolder, selectedFolder } = useFolders();
+    const selectedCategoryRef = useRef<Category>("notes");
 
-    const handleFolderSelect = (id: number) => {
-        console.log(id);
-        selectFolder(id);
+    type Category = "notes" | "archived" | "trashed" | "followed" | "folders";
+    const changeCategory = (index: Category) => {
+        //reset all
+        selectedCategoryRef.current = index;
+        selectFolder(-1);
+        setShowArchived(false);
+        setShowTrashed(false);
+        setShowFollowed(false);
+        switch (index) {
+            case "notes":
+                //show notes. do nothing extra for this
+                break;
+            case "archived":
+                setShowArchived(true);
+                break;
+            case "trashed":
+                setShowTrashed(true);
+                break;
+            case "followed":
+                setShowFollowed(true);
+                break;
+            case "folders":
+                //show folders.
+                break;
+            default:
+                console.log("Invalid category index:", index);
+                break;
+        }
         setMenuOpened(false);
+    }
+    const handleFolderSelect = (id: number) => {
+        changeCategory("folders");
+        selectFolder(id);
     }
 
     const MenuIcon = () => {
-        if (selectedFolder) return <IconFolderOpen />
-        if (showTrashed) return <IconTrash />;
-        if (showArchived) {
-            return <IconArchive />;
-        } else {
-            return <IconFile />
+        switch (selectedCategoryRef.current) {
+            case "notes":
+                return <IconFile />
+            case "archived":
+                return <IconArchive />
+            case "trashed":
+                return <IconTrash />
+            case "followed":
+                return <IconFlare />
+            case "folders":
+                return <IconFolder />
         }
     }
-
-    const handleNotesClick = () => {
-        setShowArchived(false);
-        setShowTrashed(false);
-        handleFolderSelect(-1);
-    }
-
-    const handleArchivedClick = () => {
-        setShowArchived(true);
-        setShowTrashed(false);
-        handleFolderSelect(-1);
-    }
-
-    const handleTrashedClick = () => {
-        setShowArchived(false);
-        setShowTrashed(true);
-        handleFolderSelect(-1);
-    }
-
-
 
     return (
         <Menu opened={menuOpened} onChange={setMenuOpened} shadow="md" width={200} withArrow position="bottom-start">
@@ -71,22 +85,40 @@ const FoldersAndMore = ({
             <Menu.Dropdown>
                 <Menu.Label>Main</Menu.Label>
                 <Menu.Item
-                    leftSection={!selectedFolder && !showArchived && !showTrashed ? <IconFileFilled size={14} /> : <IconFile size={14} />}
-                    onClick={handleNotesClick}
+                    leftSection={selectedCategoryRef.current === "notes" ?
+                        <IconFileFilled size={14} />
+                        :
+                        <IconFile size={14} />}
+                    onClick={() => changeCategory("notes")}
                 >
                     Notes
                 </Menu.Item>
                 <Menu.Item
-                    leftSection={!selectedFolder && showArchived ? <IconArchiveFilled size={14} /> : <IconArchive size={14} />}
-                    onClick={handleArchivedClick}
+                    leftSection={selectedCategoryRef.current === "archived" ?
+                        <IconArchiveFilled size={14} />
+                        :
+                        <IconArchive size={14} />}
+                    onClick={() => changeCategory("archived")}
                 >
                     Archived
                 </Menu.Item>
                 <Menu.Item
-                    leftSection={!selectedFolder && showTrashed ? <IconTrashFilled size={14} /> : <IconTrash size={14} />}
-                    onClick={handleTrashedClick}
+                    leftSection={selectedCategoryRef.current === "trashed" ?
+                        <IconTrashFilled size={14} />
+                        :
+                        <IconTrash size={14} />}
+                    onClick={() => changeCategory("trashed")}
                 >
                     Trashed
+                </Menu.Item>
+                <Menu.Item
+                    leftSection={selectedCategoryRef.current === "followed" ?
+                        <IconFlareFilled size={14} />
+                        :
+                        <IconFlare size={14} />}
+                    onClick={() => changeCategory("followed")}
+                >
+                    Followed
                 </Menu.Item>
                 <Menu.Divider />
                 <Menu.Label>

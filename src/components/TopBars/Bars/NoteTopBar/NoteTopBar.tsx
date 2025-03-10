@@ -1,10 +1,11 @@
 import { GenericTopBar } from "@/components/TopBars"
 import { Note } from "@/context/notes"
 import { ActionIcon, Center, Popover, Space, Text, TextInput, ThemeIcon } from "@mantine/core";
-import { IconCloudCheck, IconCloudDown, IconCloudPause, IconDotsVertical, IconUsersGroup, IconWorld } from "@tabler/icons-react"
+import { IconCloudCheck, IconCloudDown, IconCloudPause, IconDotsVertical, IconFlare, IconUsersGroup, IconWorld } from "@tabler/icons-react"
 import NoteSettings, { NoteSettingsRef } from "@/components/NoteSettings"
 import { useRef } from "react"
 import CopyField from "@/components/CopyField";
+import { useNotes } from "@/hooks/useNotes";
 
 
 const NoteTopBar = ({
@@ -23,7 +24,7 @@ const NoteTopBar = ({
     handleNoteUpdate?: (data: { [key: string]: string }) => void
 }) => {
     const noteSettingsRef = useRef<NoteSettingsRef>(null);
-
+    const { toggleFollowNote } = useNotes();
     const inputRightSection = () => {
         if (noteLoading) return <IconCloudDown className="animate-pulse" />;
         if (editable)
@@ -46,32 +47,44 @@ const NoteTopBar = ({
                 />
                 <NoteSettings ref={noteSettingsRef} note={note} noteLoading={noteLoading} />
                 {isPublic && note ? (
-                    <Popover
-                        width={220}
-                        position="bottom"
-                        withArrow
-                        shadow="md">
-                        <Popover.Target >
+                    <>
+                        <ActionIcon.Group>
+                            <Popover
+                                width={220}
+                                position="bottom"
+                                withArrow
+                                shadow="md">
+                                <Popover.Target >
+                                    <ActionIcon
+                                        variant="default"
+                                        size={"input-sm"}
+                                        c={"dimmed"}
+                                    >
+                                        <IconWorld />
+                                    </ActionIcon>
+                                </Popover.Target>
+                                <Popover.Dropdown>
+                                    <Center pb={"md"} pt={"xs"}>
+                                        <ThemeIcon variant="transparent" c={"dimmed"} className="animate-pulse">
+                                            <IconUsersGroup size={32} />
+                                        </ThemeIcon>
+                                    </Center>
+                                    <Text size="xs" mb={"xs"}>This note is publicly accessible for reading with the following link</Text>
+                                    <CopyField size="xs" c={"dimmed"} value={window.location.origin + "/note/" + note.id} />
+                                    <Text mt={"sm"} size="xs" c={"dimmed"} className="text-center">updated at {new Date(note.updated_at).toLocaleDateString()}</Text>
+                                    <Text size="xs" c={"dimmed"} className="text-center">created at {new Date(note.created_at).toLocaleDateString()}</Text>
+                                </Popover.Dropdown>
+                            </Popover>
                             <ActionIcon
                                 variant="default"
                                 size={"input-sm"}
-                                c={"dimmed"}
+                                disabled={note == null || noteLoading}
+                                onClick={() => toggleFollowNote(note.id)}
                             >
-                                <IconWorld />
+                                <IconFlare />
                             </ActionIcon>
-                        </Popover.Target>
-                        <Popover.Dropdown>
-                            <Center pb={"md"} pt={"xs"}>
-                                <ThemeIcon variant="transparent" c={"dimmed"} className="animate-pulse">
-                                    <IconUsersGroup size={32} />
-                                </ThemeIcon>
-                            </Center>
-                            <Text size="xs" mb={"xs"}>This note is publicly accessible for reading with the following link</Text>
-                            <CopyField size="xs" c={"dimmed"} value={window.location.origin + "/note/" + note.id} />
-                            <Text mt={"sm"} size="xs" c={"dimmed"} className="text-center">updated at {new Date(note.updated_at).toLocaleDateString()}</Text>
-                            <Text size="xs" c={"dimmed"} className="text-center">created at {new Date(note.created_at).toLocaleDateString()}</Text>
-                        </Popover.Dropdown>
-                    </Popover>
+                        </ActionIcon.Group>
+                    </>
                 ) : (
                     <ActionIcon
                         variant="default"
